@@ -40,6 +40,8 @@ class Board:
     
     def get_rows(self):
         return len(self.board)
+    
+    
             
 Gameboard = Board(3, 3)
             
@@ -49,6 +51,8 @@ class Gameplay:
         self.board = board
     
     def player_input(self):
+        player_row = 0
+        player_col = 0
     # try-excepts to make sure player enters a number and not some other character
     # column first
         while True:    
@@ -58,7 +62,7 @@ class Gameplay:
                 print ("Please enter a valid number.")
                 continue
             #checks that player enters a number within the range of the board
-            if not ((player_col >= 0 and player_col < Board.get_cols(self))):
+            if not ((player_col >= 0 and player_col < Board.get_cols(self.board))):
                 print ("Please enter a valid number.")
                 continue
             else:
@@ -71,20 +75,20 @@ class Gameplay:
             except ValueError:        
                 print ("Please enter a valid number.")
                 continue
-            if not ((player_row >= 0 and player_row < Board.get_rows(self))):
+            if not ((player_row >= 0 and player_row < Board.get_rows(self.board))):
                 print ("Please enter a valid number.")
                 continue
             else:
                 break
     
         # checks if the selected cell is already used up
-        if not self.board[player_row][player_col] == "-":
+        if not self.board.board[player_row][player_col] == "-":
             print ("Already in use!")
             self.player_input(self)
         
         # if all conditions are met, cell is filled with an X
         else:
-            self.board[player_row][player_col] = "X"
+            self.board.board[player_row][player_col] = "X"
             
     def ai_input(self):
         attempts = 0
@@ -92,15 +96,15 @@ class Gameplay:
     
         while True:
         # randint to generate a random pair of coordinates
-            ai_y = randint(0, len(self.board) - 1)
-            ai_x = randint(0, len(self.board[0]) - 1)
+            ai_y = randint(0, Board.get_cols(self.board) - 1)
+            ai_x = randint(0, Board.get_rows(self.board) - 1)
         
             # checks that the cell is empty, if not, try again with new coords
-            if self.board[ai_y][ai_x] != "-":
+            if self.board.board[ai_y][ai_x] != "-":
                 attempts += 1
                 continue
             else:
-                self.board[ai_y][ai_x] = "O"
+                self.board.board[ai_y][ai_x] = "O"
                 attempts += 1
                 break
             if attempts >= max_attempts:
