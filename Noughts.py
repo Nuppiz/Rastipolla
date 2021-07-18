@@ -4,17 +4,21 @@ from random import randint
 
 # initialize  SDL2 objects & variables
 sdl2.ext.init()
-width = 640
-height = 480
-window = sdl2.ext.Window("Noughts and Crosses", size=(width, height))
-window_surface = window.get_surface()
+res_path        = sdl2.ext.Resources(__file__, ".")
+width           = 640
+height          = 480
+window          = sdl2.ext.Window("Noughts and Crosses", size=(width, height))
+window_surface  = window.get_surface()
+window_pixels   = sdl2.ext.PixelView(window_surface)
+window.show()
+
+# draw background
 color = sdl2.ext.Color(0, 127, 0)
 sdl2.ext.fill(window_surface, color, (0, 0, width, height))
-res_path = sdl2.ext.Resources(__file__, ".")
+
+# load & draw picture
 kuva = sdl2.ext.load_image(res_path.get_path("kuva.png"))
 sdl2.SDL_SetColorKey(kuva, sdl2.SDL_TRUE, 0x0000FF)
-window_pixels = sdl2.ext.PixelView(window_surface)
-window.show()
 sdl2.SDL_BlitScaled(kuva, None, window_surface, None)
 
 running = True
@@ -31,10 +35,18 @@ class Board:
         for row in self.board:
             print (" ".join(row))
             
-class Gameplay():
+    def get_cols(self):
+        return len(self.board[0])
     
-    def __init__(self):
-        self.board = Board.board
+    def get_rows(self):
+        return len(self.board)
+            
+Gameboard = Board(3, 3)
+            
+class Gameplay:
+    
+    def __init__(self, board):
+        self.board = board
     
     def player_input(self):
     # try-excepts to make sure player enters a number and not some other character
@@ -46,7 +58,7 @@ class Gameplay():
                 print ("Please enter a valid number.")
                 continue
             #checks that player enters a number within the range of the board
-            if not ((player_col >= 0 and player_col < len(self.board[0]))):
+            if not ((player_col >= 0 and player_col < Board.get_cols(self))):
                 print ("Please enter a valid number.")
                 continue
             else:
@@ -59,7 +71,7 @@ class Gameplay():
             except ValueError:        
                 print ("Please enter a valid number.")
                 continue
-            if not ((player_row >= 0 and player_row < len(self.board))):
+            if not ((player_row >= 0 and player_row < Board.get_rows(self))):
                 print ("Please enter a valid number.")
                 continue
             else:
@@ -68,7 +80,7 @@ class Gameplay():
         # checks if the selected cell is already used up
         if not self.board[player_row][player_col] == "-":
             print ("Already in use!")
-            self.player_input()
+            self.player_input(self)
         
         # if all conditions are met, cell is filled with an X
         else:
@@ -94,16 +106,16 @@ class Gameplay():
             if attempts >= max_attempts:
                 print("Out of attempts")
             break
-    
             
     def game_loop(self):
         print ("Player 1's turn")
-        Gameplay.player_input(self)
+        self.player_input()
         Gameboard.print_board()
         print ("AI's turn")
-        Gameplay.ai_input(self)
-    
-Gameboard = Board(3, 3)
+        self.ai_input()
+        Gameboard.print_board()
+        
+Gameplay = Gameplay(Gameboard)
 
 while running == True:
     # 1. GET INPUT & PROCESS EVENTS
@@ -114,5 +126,5 @@ while running == True:
         running = False
         break
     Gameboard.print_board()
-    Gameplay.game_loop(Gameboard)
+    Gameplay.game_loop()
     break
