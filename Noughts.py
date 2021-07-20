@@ -31,7 +31,7 @@ class Board:
         self.board = [["-"] * columns] * rows
         
     # splits the cells into rows
-    def print_board(self):
+    def print_board(self, board):
         for row in self.board:
             print (" ".join(row))
             
@@ -40,19 +40,14 @@ class Board:
     
     def get_rows(self):
         return len(self.board)
-    
-    
-            
-Gameboard = Board(3, 3)
             
 class Gameplay:
     
-    def __init__(self, board):
-        self.board = board
+    def __init__(self, play_area):
+        self.play_area = play_area
     
     def player_input(self):
-        player_row = 0
-        player_col = 0
+        
     # try-excepts to make sure player enters a number and not some other character
     # column first
         while True:    
@@ -62,7 +57,7 @@ class Gameplay:
                 print ("Please enter a valid number.")
                 continue
             #checks that player enters a number within the range of the board
-            if not ((player_col >= 0 and player_col < Board.get_cols(self.board))):
+            if not ((player_col >= 0 and player_col < Board.get_cols(self.play_area))):
                 print ("Please enter a valid number.")
                 continue
             else:
@@ -75,20 +70,21 @@ class Gameplay:
             except ValueError:        
                 print ("Please enter a valid number.")
                 continue
-            if not ((player_row >= 0 and player_row < Board.get_rows(self.board))):
+            if not ((player_row >= 0 and player_row < Board.get_rows(self.play_area))):
                 print ("Please enter a valid number.")
                 continue
             else:
                 break
     
         # checks if the selected cell is already used up
-        if not self.board.board[player_row][player_col] == "-":
+        if not self.play_area.board[player_row][player_col] == "-":
             print ("Already in use!")
-            self.player_input(self)
+            self.player_input()
         
         # if all conditions are met, cell is filled with an X
         else:
-            self.board.board[player_row][player_col] = "X"
+            self.play_area.board[player_row] [player_col] = "X"
+            print("Added X to Y:", player_row, "X:", player_col) #debug text, remove later
             
     def ai_input(self):
         attempts = 0
@@ -96,29 +92,30 @@ class Gameplay:
     
         while True:
         # randint to generate a random pair of coordinates
-            ai_y = randint(0, Board.get_cols(self.board) - 1)
-            ai_x = randint(0, Board.get_rows(self.board) - 1)
+            ai_y = randint(0, Board.get_cols(self.play_area) - 1)
+            ai_x = randint(0, Board.get_rows(self.play_area) - 1)
         
             # checks that the cell is empty, if not, try again with new coords
-            if self.board.board[ai_y][ai_x] != "-":
+            if self.play_area.board[ai_y][ai_x] != "-":
                 attempts += 1
                 continue
             else:
-                self.board.board[ai_y][ai_x] = "O"
-                attempts += 1
+                self.play_area.board[ai_y][ai_x] = "O"
+                print("Added O to Y:", ai_y, "X:", ai_x) #debug text, remove later
                 break
             if attempts >= max_attempts:
                 print("Out of attempts")
             break
             
     def game_loop(self):
+        Gameboard.print_board(Gameboard)
         print ("Player 1's turn")
         self.player_input()
-        Gameboard.print_board()
+        Gameboard.print_board(Gameboard)
         print ("AI's turn")
         self.ai_input()
-        Gameboard.print_board()
         
+Gameboard = Board(3, 3)   
 Gameplay = Gameplay(Gameboard)
 
 while running == True:
@@ -129,6 +126,4 @@ while running == True:
       if event.type == sdl2.SDL_QUIT:
         running = False
         break
-    Gameboard.print_board()
     Gameplay.game_loop()
-    break
