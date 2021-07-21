@@ -25,10 +25,14 @@ running = True
 
 class Board:
     
+    board = []
+    
     def __init__(self, rows, columns):
         self.rows = rows
         self.columns = columns
-        self.board = [["-"] * columns] * rows
+        # create board
+        for row in range(rows):
+            self.board.append(["-"] * (columns))
         
     # splits the cells into rows
     def print_board(self, board):
@@ -83,8 +87,7 @@ class Gameplay:
         
         # if all conditions are met, cell is filled with an X
         else:
-            self.play_area.board[player_row] [player_col] = "X"
-            print("Added X to Y:", player_row, "X:", player_col) #debug text, remove later
+            self.play_area.board[player_row][player_col] = "X"
             
     def ai_input(self):
         attempts = 0
@@ -101,7 +104,6 @@ class Gameplay:
                 continue
             else:
                 self.play_area.board[ai_y][ai_x] = "O"
-                print("Added O to Y:", ai_y, "X:", ai_x) #debug text, remove later
                 break
             if attempts >= max_attempts:
                 print("Out of attempts")
