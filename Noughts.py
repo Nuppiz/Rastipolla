@@ -26,10 +26,12 @@ running = True
 class Board:
     
     board = []
+    max_straight = 0
     
     def __init__(self, rows, columns):
         self.rows = rows
         self.columns = columns
+        
         # create board
         for row in range(rows):
             self.board.append(["-"] * (columns))
@@ -44,6 +46,59 @@ class Board:
     
     def get_rows(self):
         return len(self.board)
+    
+    def score_checker(self, character):
+        self.getMax(character)
+        self.check_diagonal(character)
+        if self.max_straight == 3:
+            return 1
+        elif self.check_diagonal == 1:
+            return 1
+    
+    def getMax(self, character):
+        max_rows = self.check_rows(character)
+        max_cols = self.check_columns(character)
+        
+        max_straight = max(max_rows, max_cols)
+    
+        return max_straight
+    
+    # functions to check each row and column for consecutive characters (X or O)
+    def check_rows(self, character):
+        max_score = 0
+        for row in range(0,len(self.board)):
+            score = 0
+            for column in range(0,len(self.board[0])):
+                if self.board[row][column] == character:
+                    score +=1
+                    if score > max_score:
+                        max_score = score
+                else:
+                    score = 0
+                    
+        return max_score
+    
+    def check_columns(self, character):
+        max_score = 0
+        for column in range(0,len(self.board[0])):
+            score = 0
+            for row in range(0,len(self.board)):
+                if self.board[row][column] == character:
+                    score +=1
+                    if score > max_score:
+                        max_score = score
+                else:
+                    score = 0
+                    
+        return max_score
+    
+    def check_diagonal(self, character):
+        if self.board[0][0] and self.board[1][1] and self.board[2][2]:
+            return 1
+        elif self.board[2][0] and self.board[1][1] and self.board[0][2]:
+            return 1
+        else:
+            return 0
             
 class Gameplay:
     
@@ -113,9 +168,19 @@ class Gameplay:
         Gameboard.print_board(Gameboard)
         print ("Player 1's turn")
         self.player_input()
+        Board.score_checker(Gameboard, "X")
+        print ("Score is:", Board.max_straight)
+        if Board.score_checker == 1:
+            print ("Player 1 wins!")
+            quit()
         Gameboard.print_board(Gameboard)
         print ("AI's turn")
         self.ai_input()
+        Board.score_checker(Gameboard, "O")
+        print ("Score is:", Board.max_straight)
+        if Board.score_checker == 1:
+            print ("AI wins!")
+            quit()
         
 Gameboard = Board(3, 3)   
 Gameplay = Gameplay(Gameboard)
