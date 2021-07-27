@@ -177,6 +177,65 @@ class Gameplay:
             if attempts >= max_attempts:
                 print("Out of attempts")
             break
+
+    def ai_move(self):
+        bestScore = 0
+        
+        row = 0
+        column = 0
+
+        for column in range(0,len(self.play_area.board[0])):
+            for row in range(0,len(self.play_area.board)):        
+                if self.play_area.board[row][column] == "-":
+                    self.play_area.board[row][column] = "O"
+                    score = self.miniMax(self.play_area.board, 0, True)
+                    self.play_area.board[row][column] = "-"
+                    if score > bestScore:
+                        bestScore = score
+                        self.play_area.board[row][column] = "O"
+            column += 1
+            row += 1
+                
+    def miniMax(self, board, depth, isMaximizing):
+        
+        row = 0
+        column = 0
+        
+        if isMaximizing == True:
+            bestScore = -100
+            
+            for column in range(0,len(self.play_area.board[0])):
+                for row in range(0,len(self.play_area.board)):  
+            
+                    if self.play_area.board[row][column] == "-":
+                        self.play_area.board[row][column] = "O"
+                        score = self.miniMax(self.play_area.board, depth + 1, False)
+                        self.play_area.board[row][column] = "-"
+                        if score > bestScore:
+                            bestScore = score
+                        
+                column += 1
+                row += 1
+                
+            return bestScore
+        
+        else:
+            bestScore = 100
+            
+            for column in range(0,len(self.play_area.board[0])):
+                for row in range(0,len(self.play_area.board)):  
+            
+                    if self.play_area.board[row][column] == "-":
+                        self.play_area.board[row][column] = "X"
+                        score = self.miniMax(self.play_area.board, depth + 1, True)
+                        self.play_area.board[row][column] = "-"
+                        if score < bestScore:
+                            bestScore = score
+                            
+                column += 1
+                row += 1
+                
+            return bestScore
             
     def game_loop(self):
         Gameboard.print_board(Gameboard)
@@ -189,7 +248,7 @@ class Gameplay:
             quit()
         Gameboard.print_board(Gameboard)
         print ("AI's turn")
-        self.ai_input()
+        self.ai_move()
         Board.score_checker(Gameboard, "O")
         if Board.score_checker(Gameboard, "O") == 1:
             print ("AI wins!")
