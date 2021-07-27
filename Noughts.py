@@ -17,11 +17,25 @@ color = sdl2.ext.Color(0, 127, 0)
 sdl2.ext.fill(window_surface, color, (0, 0, width, height))
 
 # load & draw picture
-kuva = sdl2.ext.load_image(res_path.get_path("kuva.png"))
-sdl2.SDL_SetColorKey(kuva, sdl2.SDL_TRUE, 0x0000FF)
-sdl2.SDL_BlitScaled(kuva, None, window_surface, None)
+grid = sdl2.ext.load_image(res_path.get_path("grid.png"))
+cross = sdl2.ext.load_image(res_path.get_path("cross.png"))
+nought = sdl2.ext.load_image(res_path.get_path("nought.png"))
+sdl2.SDL_SetColorKey(grid, sdl2.SDL_TRUE, 0xFF00FF)
+sdl2.SDL_SetColorKey(cross, sdl2.SDL_TRUE, 0xFF00FF)
+sdl2.SDL_SetColorKey(nought, sdl2.SDL_TRUE, 0xFF00FF)
+sdl2.SDL_BlitScaled(grid, None, window_surface, None)
 
 running = True
+
+def draw(marker, x, y):
+    
+    draw_x = 105 + (int(x) * 145) # horizontal draw location
+    draw_y = 25 + (int(y) * 145) # vertical draw location
+    
+    print(draw_x) # debug to check the sprite is loaded in the right spot
+    print(draw_y) # debug to check the sprite is loaded in the right spot
+    
+    sdl2.SDL_BlitScaled(marker, None, window_surface, sdl2.SDL_Rect(draw_x, draw_y), None)
 
 class Board:
     
@@ -51,6 +65,8 @@ class Board:
             return 1
         elif self.check_diagonal(character) == 1:
             return 1
+        else:
+            return 0
     
     def getMax(self, character):
         max_rows = self.check_rows(character)
@@ -138,6 +154,7 @@ class Gameplay:
         # if all conditions are met, cell is filled with an X
         else:
             self.play_area.board[player_row][player_col] = "X"
+            draw(cross, player_col, player_row)
             
     def ai_input(self):
         attempts = 0
