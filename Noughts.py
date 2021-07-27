@@ -23,7 +23,7 @@ nought = sdl2.ext.load_image(res_path.get_path("nought.png"))
 sdl2.SDL_SetColorKey(grid, sdl2.SDL_TRUE, 0xFF00FF)
 sdl2.SDL_SetColorKey(cross, sdl2.SDL_TRUE, 0xFF00FF)
 sdl2.SDL_SetColorKey(nought, sdl2.SDL_TRUE, 0xFF00FF)
-sdl2.SDL_BlitScaled(grid, None, window_surface, None)
+sdl2.SDL_BlitSurface(grid, None, window_surface, None)
 
 running = True
 
@@ -34,7 +34,7 @@ def draw(marker, x, y):
     
     print("Attempting to draw a", marker, "at", draw_x, ",",draw_y) # debug to check the sprite is loaded in the right spot
 
-    sdl2.SDL_BlitScaled(marker, None, window_surface, sdl2.SDL_Rect(draw_x, draw_y, 140, 140))
+    sdl2.SDL_BlitSurface(marker, None, window_surface, sdl2.SDL_Rect(draw_x, draw_y))
 
 class Board:
     
