@@ -26,7 +26,6 @@ running = True
 class Board:
     
     board = []
-    max_straight = 0
     
     def __init__(self, rows, columns):
         self.rows = rows
@@ -48,20 +47,16 @@ class Board:
         return len(self.board)
     
     def score_checker(self, character):
-        self.getMax(character)
-        self.check_diagonal(character)
-        if self.max_straight == 3:
+        if self.getMax(character) == 3:
             return 1
-        elif self.check_diagonal == 1:
+        elif self.check_diagonal(character) == 1:
             return 1
     
     def getMax(self, character):
         max_rows = self.check_rows(character)
         max_cols = self.check_columns(character)
         
-        max_straight = max(max_rows, max_cols)
-    
-        return max_straight
+        return max(max_rows, max_cols)
     
     # functions to check each row and column for consecutive characters (X or O)
     def check_rows(self, character):
@@ -93,9 +88,9 @@ class Board:
         return max_score
     
     def check_diagonal(self, character):
-        if self.board[0][0] and self.board[1][1] and self.board[2][2]:
+        if self.board[0][0] == character and self.board[1][1] == character and self.board[2][2] == character:
             return 1
-        elif self.board[2][0] and self.board[1][1] and self.board[0][2]:
+        elif self.board[2][0] == character and self.board[1][1] == character and self.board[0][2] == character:
             return 1
         else:
             return 0
@@ -169,17 +164,17 @@ class Gameplay:
         print ("Player 1's turn")
         self.player_input()
         Board.score_checker(Gameboard, "X")
-        print ("Score is:", Board.max_straight)
-        if Board.score_checker == 1:
+        if Board.score_checker(Gameboard, "X") == 1:
             print ("Player 1 wins!")
+            Gameboard.print_board(Gameboard)
             quit()
         Gameboard.print_board(Gameboard)
         print ("AI's turn")
         self.ai_input()
         Board.score_checker(Gameboard, "O")
-        print ("Score is:", Board.max_straight)
-        if Board.score_checker == 1:
+        if Board.score_checker(Gameboard, "O") == 1:
             print ("AI wins!")
+            Gameboard.print_board(Gameboard)
             quit()
         
 Gameboard = Board(3, 3)   
