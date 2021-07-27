@@ -32,10 +32,9 @@ def draw(marker, x, y):
     draw_x = 105 + (int(x) * 145) # horizontal draw location
     draw_y = 25 + (int(y) * 145) # vertical draw location
     
-    print(draw_x) # debug to check the sprite is loaded in the right spot
-    print(draw_y) # debug to check the sprite is loaded in the right spot
-    
-    sdl2.SDL_BlitScaled(marker, None, grid, sdl2.SDL_Rect(draw_x, draw_y), None)
+    print("Attempting to draw a", marker, "at", draw_x, ",",draw_y) # debug to check the sprite is loaded in the right spot
+
+    sdl2.SDL_BlitScaled(marker, None, window_surface, sdl2.SDL_Rect(draw_x, draw_y, 140, 140))
 
 class Board:
     
@@ -172,6 +171,8 @@ class Gameplay:
                 continue
             else:
                 self.play_area.board[ai_y][ai_x] = "O"
+                draw(nought, ai_x, ai_y)
+                window.refresh()
                 break
             if attempts >= max_attempts:
                 print("Out of attempts")
