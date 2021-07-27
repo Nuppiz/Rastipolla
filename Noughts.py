@@ -35,7 +35,7 @@ def draw(marker, x, y):
     print(draw_x) # debug to check the sprite is loaded in the right spot
     print(draw_y) # debug to check the sprite is loaded in the right spot
     
-    sdl2.SDL_BlitScaled(marker, None, window_surface, sdl2.SDL_Rect(draw_x, draw_y), None)
+    sdl2.SDL_BlitScaled(marker, None, grid, sdl2.SDL_Rect(draw_x, draw_y), None)
 
 class Board:
     
@@ -155,6 +155,7 @@ class Gameplay:
         else:
             self.play_area.board[player_row][player_col] = "X"
             draw(cross, player_col, player_row)
+            window.refresh()
             
     def ai_input(self):
         attempts = 0
