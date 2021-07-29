@@ -108,15 +108,14 @@ class Board:
             return 0
         
 mouseClicked = False
-correctMove = False
+correctMove_X = False
+correctMove_Y = False
+player_col = 0
+globalplayer_row = 0
         
 def mouse_processor():
     
     global mouseClicked
-    global correctMove
-    
-    mouse_x = 0
-    mouse_y = 0
     
     events = sdl2.ext.get_events()
     
@@ -126,66 +125,83 @@ def mouse_processor():
         elif event.type == sdl2.SDL_MOUSEMOTION:
             mouse_x = event.motion.x
             mouse_y = event.motion.y
-        elif event.type == sdl2.SDL_MOUSEBUTTONDOWN:
+        if event.type == sdl2.SDL_MOUSEBUTTONDOWN:
+            mouse_x = event.motion.x
+            mouse_y = event.motion.y
             if event.button.button == sdl2.SDL_BUTTON_LEFT:
+                print (mouse_x, mouse_y)
                 mouseClicked = True
-        return mouse_x, mouse_y
-         
-        if int(mouse_x) > 104 and int(mouse_x) < 245:
-            player_col = 0
-            correctMove = True
-        elif int(mouse_x) > 249 and int(mouse_x) < 390:
-            player_col = 1
-            correctMove = True
-        elif int(mouse_x) > 394 and int(mouse_x) < 535:
-            player_col = 2
-            correctMove = True
-        else:
-            print ("Clicked outside of the play area.")
-            
-        if int(mouse_y) > 24 and int(mouse_x) < 165:
-            player_row = 0
-            correctMove = True
-        elif int(mouse_y) > 169 and int(mouse_x) < 310:
-            player_row = 1
-            correctMove = True
-        elif int(mouse_y) > 314 and int(mouse_x) < 455:
-            player_row = 2
-            correctMove = True
-        else:
-            print ("Clicked outside of the play area.")
-            
-        return player_col, player_row
+                check_cursor(mouse_x, mouse_y)
     
-def player_input(board):
+def check_cursor(mouse_x, mouse_y):
     
-    global mouseClicked
-    global correctMove
+    global correctMove_X
+    global correctMove_Y
+    
+    global player_col
+    global player_row
+           
+    if int(mouse_x) > 104 and int(mouse_x) < 245:
+        player_col = 0
+        correctMove_X = True
+    elif int(mouse_x) > 249 and int(mouse_x) < 390:
+        player_col = 1
+        correctMove_X = True
+    elif int(mouse_x) > 394 and int(mouse_x) < 535:
+        player_col = 2
+        correctMove_X = True
+    else:
+        print ("Clicked outside of the play area (X).")
         
-    while True:
-        mouse_processor()
+    if int(mouse_y) > 24 and int(mouse_y) < 165:
+        player_row = 0
+        correctMove_Y = True
+    elif int(mouse_y) > 169 and int(mouse_y) < 310:
+        player_row = 1
+        correctMove_Y = True
+    elif int(mouse_y) > 314 and int(mouse_y) < 455:
+        player_row = 2
+        correctMove_Y = True
+    else:
+        print ("Clicked outside of the play area (Y).")
         
-        if mouseClicked == True and correctMove == True:
-            # checks if the selected cell is already used up
-            if not Gameboard[player_row][player_col] == "-":
-                print ("Already in use!")
-                mouseClicked = False
-                correctMove = False
-                continue
-            
-            # if all conditions are met, cell is filled with an X
-            else:
-                Gameboard[player_row][player_col] = "X"
-                draw(cross, player_col, player_row)
-                mouseClicked = False
-                correctMove = False
-                window.refresh()
-                break
+    return player_col, player_row
             
 class Gameplay:
     
     def __init__(self, play_area):
         self.play_area = play_area
+        
+    def player_input(self, board):
+    
+        global mouseClicked
+        global correctMove_X
+        global correctMove_Y
+        
+        global player_col
+        global player_row
+            
+        while True:
+            mouse_processor()
+            
+            if mouseClicked == True and correctMove_X == True and correctMove_Y == True:
+                # checks if the selected cell is already used up
+                if not self.play_area.board[player_row][player_col] == "-":
+                    print ("Already in use!")
+                    mouseClicked = False
+                    correctMove_X = False
+                    correctMove_Y = False
+                    continue
+                
+                # if all conditions are met, cell is filled with an X
+                else:
+                    self.play_area.board[player_row][player_col] = "X"
+                    draw(cross, player_col, player_row)
+                    mouseClicked = False
+                    correctMove_X = False
+                    correctMove_Y = False
+                    window.refresh()
+                    break
             
     def ai_input(self):
         attempts = 0
@@ -274,7 +290,7 @@ class Gameplay:
     def game_loop(self):
         Gameboard.print_board(Gameboard)
         print ("Player 1's turn")
-        player_input(Gameboard)
+        self.player_input(Gameboard)
         Board.score_checker(Gameboard, "X")
         if Board.score_checker(Gameboard, "X") == 1:
             print ("Player 1 wins!")
