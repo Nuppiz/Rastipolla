@@ -295,7 +295,12 @@ class Gameplay:
         if Board.score_checker(Gameboard, "X") == 1:
             print ("Player 1 wins!")
             Gameboard.print_board(Gameboard)
-            quit()
+            print ("Game over man, game over!")
+            new_game = input("Enter Y to play again, any other key to quit:")
+            if new_game == "Y" or new_game == "y":
+                main()
+            else:
+                quit()
         Gameboard.print_board(Gameboard)
         print ("AI's turn")
         self.ai_input()
@@ -303,7 +308,12 @@ class Gameplay:
         if Board.score_checker(Gameboard, "O") == 1:
             print ("AI wins!")
             Gameboard.print_board(Gameboard)
-            quit()
+            print ("Game over man, game over!")
+            new_game = input("Enter Y to play again, any other key to quit:")
+            if new_game == "Y" or new_game == "y":
+                main()
+            else:
+                quit()
         
 Gameboard = Board(3, 3)   
 Gameplay = Gameplay(Gameboard)
