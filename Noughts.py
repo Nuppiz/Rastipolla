@@ -22,7 +22,6 @@ nought = sdl2.ext.load_image(res_path.get_path("nought.png"))
 sdl2.SDL_SetColorKey(grid, sdl2.SDL_TRUE, 0xFF00FF)
 sdl2.SDL_SetColorKey(cross, sdl2.SDL_TRUE, 0xFF00FF)
 sdl2.SDL_SetColorKey(nought, sdl2.SDL_TRUE, 0xFF00FF)
-sdl2.SDL_BlitSurface(grid, None, window_surface, None)
 
 running = True
 
@@ -49,6 +48,16 @@ class Board:
     def print_board(self, board):
         for row in self.board:
             print (" ".join(row))
+    
+    # clear the board when a new game is started        
+    def clear_board(self):
+        for row in range(0,len(self.board)):
+            for column in range(0,len(self.board[0])):
+                if self.board[row][column] != "-":
+                    self.board[row][column] = "-"
+        # and also reset the graphics
+        sdl2.ext.fill(window_surface, color, (0, 0, width, height))
+        sdl2.SDL_BlitSurface(grid, None, window_surface, None)
             
     def get_cols(self):
         return len(self.board[0])
@@ -108,16 +117,13 @@ class Board:
             return 0
         
 mouseClicked = False
-correctMove_X = False
-correctMove_Y = False
-player_col = 0
-globalplayer_row = 0
-        
+
 def mouse_processor():
     
     global mouseClicked
     
     events = sdl2.ext.get_events()
+    window.refresh()
     
     for event in events:
         if event.type == sdl2.SDL_QUIT:
@@ -298,6 +304,8 @@ class Gameplay:
             print ("Game over man, game over!")
             new_game = input("Enter Y to play again, any other key to quit:")
             if new_game == "Y" or new_game == "y":
+                Gameboard.clear_board()
+                window.refresh()
                 main()
             else:
                 quit()
@@ -311,18 +319,21 @@ class Gameplay:
             print ("Game over man, game over!")
             new_game = input("Enter Y to play again, any other key to quit:")
             if new_game == "Y" or new_game == "y":
+                Gameboard.clear_board()
+                window.refresh()
                 main()
             else:
                 quit()
         
 Gameboard = Board(3, 3)   
-Gameplay = Gameplay(Gameboard)
 
 def main():
-    running = True
+    sdl2.SDL_BlitSurface(grid, None, window_surface, None)
+    running = True 
+    Game = Gameplay(Gameboard)
     
     while running == True:
         window.refresh()
-        Gameplay.game_loop()
+        Game.game_loop()
         
 main()
