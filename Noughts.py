@@ -1,5 +1,7 @@
 import sdl2.ext
+import sdl2.sdlimage
 from random import randint
+from time import sleep
 
 # initialize  SDL2 objects & variables
 sdl2.ext.init()
@@ -8,20 +10,31 @@ width           = 640
 height          = 480
 window          = sdl2.ext.Window("Noughts and Crosses", size=(width, height))
 window_surface  = window.get_surface()
-window_pixels   = sdl2.ext.PixelView(window_surface)
+factory = sdl2.ext.SpriteFactory(sdl2.ext.SOFTWARE)
+spriterenderer = factory.create_sprite_render_system(window)
+uifactory = sdl2.ext.UIFactory(factory)
+uiprocessor = sdl2.ext.UIProcessor()
 window.show()
 
 # draw background
 color = sdl2.ext.Color(0, 127, 0)
 sdl2.ext.fill(window_surface, color, (0, 0, width, height))
 
-# load & draw picture
+# load textures
 grid = sdl2.ext.load_image(res_path.get_path("grid.png"))
 cross = sdl2.ext.load_image(res_path.get_path("cross.png"))
 nought = sdl2.ext.load_image(res_path.get_path("nought.png"))
+winner = sdl2.ext.load_image(res_path.get_path("youwon.png"))
+loser = sdl2.ext.load_image(res_path.get_path("youlost.png"))
+tie = sdl2.ext.load_image(res_path.get_path("tie.png"))
+
+# set transparencies
 sdl2.SDL_SetColorKey(grid, sdl2.SDL_TRUE, 0xFF00FF)
 sdl2.SDL_SetColorKey(cross, sdl2.SDL_TRUE, 0xFF00FF)
 sdl2.SDL_SetColorKey(nought, sdl2.SDL_TRUE, 0xFF00FF)
+sdl2.SDL_SetColorKey(winner, sdl2.SDL_TRUE, 0xFF00FF)
+sdl2.SDL_SetColorKey(loser, sdl2.SDL_TRUE, 0xFF00FF)
+sdl2.SDL_SetColorKey(tie, sdl2.SDL_TRUE, 0xFF00FF)
 
 running = True
 
@@ -31,6 +44,41 @@ def draw(marker, x, y):
     draw_y = 25 + (int(y) * 145) # vertical draw location
 
     sdl2.SDL_BlitSurface(marker, None, window_surface, sdl2.SDL_Rect(draw_x, draw_y)) # draw X or O at the correct grid location
+    
+def end_screen(ending):
+    
+    running = True
+
+    sdl2.SDL_BlitSurface(ending, None, window_surface, None) # draw ending screen depending on how the game ended
+    window.refresh()
+    sleep(1) # small pause before buttons appear
+    
+    newgame = uifactory.from_image(sdl2.ext.BUTTON, res_path.get_path("playagain.png"))
+    newgame.position = 50, 320
+    quitgame = uifactory.from_image(sdl2.ext.BUTTON, res_path.get_path("quit.png"))
+    quitgame.position = 462, 320
+    
+    spriterenderer.render((newgame, quitgame))
+    window.refresh()
+    
+    newgame.click += restart
+    quitgame.click += endgame
+    
+    while running:
+        events = sdl2.ext.get_events()
+        for event in events:
+            if event.type == sdl2.SDL_QUIT:
+                running = False
+                break
+        
+            uiprocessor.dispatch([newgame, quitgame], event)
+    
+def restart(button, event):
+    Board.clear_board(Gameboard)
+    main()
+    
+def endgame(button, event):
+    quit()
 
 class Board:
     
@@ -116,6 +164,21 @@ class Board:
         else:
             return 0
         
+    # helper function to count the amount of empty cells left on the board
+    def count_chars(self, char):
+        count = 0
+        for row in self.board:
+            count += row.count(char)
+        return count
+        
+    # if no empty cells are left and neither player has the required score, game ends in a draw
+    def draw_check(self):
+        if self.count_chars('-') == 0:
+            print ("Board full, it's a draw!")
+            return 1
+        else:
+            return 0
+        
 mouseClicked = False
 
 def mouse_processor():
@@ -135,7 +198,6 @@ def mouse_processor():
             mouse_x = event.motion.x
             mouse_y = event.motion.y
             if event.button.button == sdl2.SDL_BUTTON_LEFT:
-                print (mouse_x, mouse_y)
                 mouseClicked = True
                 check_cursor(mouse_x, mouse_y)
     
@@ -297,33 +359,19 @@ class Gameplay:
         Gameboard.print_board(Gameboard)
         print ("Player 1's turn")
         self.player_input(Gameboard)
-        Board.score_checker(Gameboard, "X")
         if Board.score_checker(Gameboard, "X") == 1:
-            print ("Player 1 wins!")
             Gameboard.print_board(Gameboard)
-            print ("Game over man, game over!")
-            new_game = input("Enter Y to play again, any other key to quit:")
-            if new_game == "Y" or new_game == "y":
-                Gameboard.clear_board()
-                window.refresh()
-                main()
-            else:
-                quit()
+            end_screen(winner)
+        elif Board.draw_check(Gameboard) == 1:
+            end_screen(tie)
         Gameboard.print_board(Gameboard)
         print ("AI's turn")
         self.ai_input()
-        Board.score_checker(Gameboard, "O")
         if Board.score_checker(Gameboard, "O") == 1:
-            print ("AI wins!")
             Gameboard.print_board(Gameboard)
-            print ("Game over man, game over!")
-            new_game = input("Enter Y to play again, any other key to quit:")
-            if new_game == "Y" or new_game == "y":
-                Gameboard.clear_board()
-                window.refresh()
-                main()
-            else:
-                quit()
+            end_screen(loser)
+        elif Board.draw_check(Gameboard) == 1:
+            end_screen(tie)
         
 Gameboard = Board(3, 3)   
 
