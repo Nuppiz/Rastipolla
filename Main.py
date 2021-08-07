@@ -5,19 +5,12 @@ import Input
 
 def game_loop(board):
     
-    global NewGame
-    
-    NewGame = True
-    
     Board.print_board(Gameboard)
     print ("Player 1's turn")
     Input.player_input(Gameboard)
     if Board.score_checker(Gameboard, "X") == 1:
         Board.print_board(Gameboard)
-        print (NewGame)
-        Graphics.end_screen(1, Gameboard)
-        if NewGame == True:
-            main()         
+        Graphics.end_screen(1, Gameboard)       
     elif Board.draw_check(Gameboard) == 1:
         Graphics.end_screen(2, Gameboard)
         
