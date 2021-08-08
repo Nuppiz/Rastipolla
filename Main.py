@@ -16,16 +16,19 @@ def game_loop(board):
         if Graphics.end_screen(1, Gameboard):
             main()
     elif Board.draw_check(Gameboard) == 1:
-        Graphics.end_screen(2, Gameboard)
+        if Graphics.end_screen(2, Gameboard):
+            main()
         
     Board.print_board(Gameboard)
     print ("AI's turn")
     Input.ai_input(Gameboard)
     if Board.score_checker(Gameboard, "O") == 1:
         Board.print_board(Gameboard)
-        Graphics.end_screen(3, Gameboard)
+        if Graphics.end_screen(3, Gameboard):
+            main()
     elif Board.draw_check(Gameboard) == 1:
-        Graphics.end_screen(2, Gameboard)
+        if Graphics.end_screen(2, Gameboard):
+            main()
         
 Gameboard = []
 Board.init_board(Gameboard)
