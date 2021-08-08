@@ -16,7 +16,7 @@ def mouse_processor():
     
     for event in events:
         if event.type == sdl2.SDL_QUIT:
-            return False
+            quit()
         elif event.type == sdl2.SDL_MOUSEMOTION:
             mouse_x = event.motion.x
             mouse_y = event.motion.y
