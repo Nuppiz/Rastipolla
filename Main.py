@@ -5,12 +5,16 @@ import Input
 
 def game_loop(board):
     
+    global NewGameClicked
+    NewGameClicked = 0
+    
     Board.print_board(Gameboard)
     print ("Player 1's turn")
     Input.player_input(Gameboard)
     if Board.score_checker(Gameboard, "X") == 1:
         Board.print_board(Gameboard)
-        Graphics.end_screen(1, Gameboard)       
+        if Graphics.end_screen(1, Gameboard):
+            main()
     elif Board.draw_check(Gameboard) == 1:
         Graphics.end_screen(2, Gameboard)
         
@@ -24,13 +28,13 @@ def game_loop(board):
         Graphics.end_screen(2, Gameboard)
         
 Gameboard = []
+Board.init_board(Gameboard)
 
 def main():
     running = True 
     
     Board.clear_board(Gameboard)
     Graphics.clear_screen()
-    Board.init_board(Gameboard)
     
     while running == True:
         Graphics.window.refresh()

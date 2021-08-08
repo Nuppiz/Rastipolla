@@ -59,6 +59,9 @@ def clear_screen():
     
 def end_screen(ending, board):
     
+    global NewGameClicked
+    NewGameClicked = 0
+    
     if ending == 1:
         end_type = winner
         
@@ -93,10 +96,15 @@ def end_screen(ending, board):
                 break
         
             uiprocessor.dispatch([newgame, quitgame], event)
+            
+            if NewGameClicked == 1:
+                NewGameClicked = 0
+                return 1
     
 def restart(button, event):
-    print ("ASD")
-    # can't call main() here, can't seem to return a value to game_loop, how the f- am I going to get this to work?
+    global NewGameClicked
+    
+    NewGameClicked = 1
     
 def endgame(button, event):
     quit()
