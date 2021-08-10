@@ -17,24 +17,22 @@ uiprocessor = sdl2.ext.UIProcessor()
 window.show()
 
 # load textures
-splash = sdl2.ext.load_image(res_path.get_path("splash.png"))
-grid = sdl2.ext.load_image(res_path.get_path("grid.png"))
-cross = sdl2.ext.load_image(res_path.get_path("cross.png"))
-nought = sdl2.ext.load_image(res_path.get_path("nought.png"))
-winner = sdl2.ext.load_image(res_path.get_path("youwon.png"))
-loser = sdl2.ext.load_image(res_path.get_path("youlost.png"))
-tie = sdl2.ext.load_image(res_path.get_path("tie.png"))
+textures = {
+  "splash" : sdl2.ext.load_image(res_path.get_path("splash.png")),
+  "grid"   : sdl2.ext.load_image(res_path.get_path("grid.png")),
+  "cross"  : sdl2.ext.load_image(res_path.get_path("cross.png")),
+  "nought" : sdl2.ext.load_image(res_path.get_path("nought.png")),
+  "winner" : sdl2.ext.load_image(res_path.get_path("youwon.png")),
+  "loser"  : sdl2.ext.load_image(res_path.get_path("youlost.png")),
+  "tie"    : sdl2.ext.load_image(res_path.get_path("tie.png"))
+}
 
 # set transparencies
-sdl2.SDL_SetColorKey(grid, sdl2.SDL_TRUE, 0xFF00FF)
-sdl2.SDL_SetColorKey(cross, sdl2.SDL_TRUE, 0xFF00FF)
-sdl2.SDL_SetColorKey(nought, sdl2.SDL_TRUE, 0xFF00FF)
-sdl2.SDL_SetColorKey(winner, sdl2.SDL_TRUE, 0xFF00FF)
-sdl2.SDL_SetColorKey(loser, sdl2.SDL_TRUE, 0xFF00FF)
-sdl2.SDL_SetColorKey(tie, sdl2.SDL_TRUE, 0xFF00FF)
+for tex in textures.values():
+  sdl2.SDL_SetColorKey(tex, sdl2.SDL_TRUE, 0xFF00FF)
 
 # load splash screen
-sdl2.SDL_BlitSurface(splash, None, window_surface, None)
+sdl2.SDL_BlitSurface(textures["splash"], None, window_surface, None)
 
 def start_screen():
     global NewGameClicked
@@ -44,13 +42,13 @@ def start_screen():
     startgame.position = 220, 270
     
     spriterenderer.render((startgame))
-    window.refresh()
     
     startgame.click += restart
     
     running = True
     
     while running:
+        window.refresh()
         events = sdl2.ext.get_events()
         for event in events:
             if event.type == sdl2.SDL_QUIT:
@@ -65,10 +63,10 @@ def start_screen():
 def draw_symbol(symbol, x, y):
     
     if symbol == 1:
-        symbol = cross
+        symbol = textures["cross"]
         
     elif symbol == 2:
-        symbol = nought
+        symbol = textures["nought"]
     
     draw_x = 105 + (int(x) * 145) # horizontal draw location
     draw_y = 25 + (int(y) * 145) # vertical draw location
@@ -81,7 +79,7 @@ def clear_screen():
     sdl2.ext.fill(window_surface, color, (0, 0, width, height))
 
     # draw grid
-    sdl2.SDL_BlitSurface(grid, None, window_surface, None)
+    sdl2.SDL_BlitSurface(textures["grid"], None, window_surface, None)
     
 def end_screen(ending, board):
     
@@ -89,13 +87,13 @@ def end_screen(ending, board):
     NewGameClicked = 0
     
     if ending == 1:
-        end_type = winner
+        end_type = textures["winner"]
         
     elif ending == 2:
-        end_type = tie
+        end_type = textures["tie"]
         
     elif ending == 3:
-        end_type = loser
+        end_type = textures["loser"]
     
     running = True
 

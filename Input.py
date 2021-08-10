@@ -5,11 +5,18 @@ from random import randint
 
 # functions controlling player and AI input
 
-mouseClicked = False
+class Input:
+  
+  def __init__(self):
+    self.mouse_x = 0
+    self.mouse_y = 0
+    self.correctMove_X = 0
+    self.correctMove_Y = 0
+    self.make_move = 0
+
+g_Input = Input()
 
 def mouse_processor():
-    
-    global mouseClicked
     
     events = sdl2.ext.get_events()
     Graphics.window.refresh()
@@ -17,21 +24,15 @@ def mouse_processor():
     for event in events:
         if event.type == sdl2.SDL_QUIT:
             quit()
-        elif event.type == sdl2.SDL_MOUSEMOTION:
-            mouse_x = event.motion.x
-            mouse_y = event.motion.y
+        
+        # when left mouse button is clicked, send coordinates to check if an X can be added on the board
         if event.type == sdl2.SDL_MOUSEBUTTONDOWN:
-            mouse_x = event.motion.x
-            mouse_y = event.motion.y
-            if event.button.button == sdl2.SDL_BUTTON_LEFT:
-                mouseClicked = True       
-                print (mouseClicked, mouse_x, mouse_y)
-                check_cursor(mouse_x, mouse_y)
+            g_Input.mouse_x = event.motion.x
+            g_Input.mouse_y = event.motion.y
+            if event.button.button == sdl2.SDL_BUTTON_LEFT:   
+                check_cursor(g_Input.mouse_x, g_Input.mouse_y)
     
 def check_cursor(mouse_x, mouse_y):
-    
-    global correctMove_X
-    global correctMove_Y
     
     global player_col
     global player_row
@@ -39,56 +40,56 @@ def check_cursor(mouse_x, mouse_y):
     while True: 
         if int(mouse_x) >= 104 and int(mouse_x) <= 245:
             player_col = 0
-            correctMove_X = 1
+            g_Input.correctMove_X = 1
         elif int(mouse_x) >= 249 and int(mouse_x) <= 390:
             player_col = 1
-            correctMove_X = 1
+            g_Input.correctMove_X = 1
         elif int(mouse_x) >= 394 and int(mouse_x) <= 535:
             player_col = 2
-            correctMove_X = 1
+            g_Input.correctMove_X = 1
         else:
             print ("Clicked outside of the play area (X).")
+            break
             
         if int(mouse_y) >= 24 and int(mouse_y) <= 165:
             player_row = 0
-            correctMove_Y = 1
+            g_Input.correctMove_Y = 1
         elif int(mouse_y) >= 169 and int(mouse_y) <= 310:
             player_row = 1
-            correctMove_Y = 1
+            g_Input.correctMove_Y = 1
         elif int(mouse_y) >= 314 and int(mouse_y) <= 455:
             player_row = 2
-            correctMove_Y = 1
+            g_Input.correctMove_Y = 1
         else:
             print ("Clicked outside of the play area (Y).")
-           
-        return player_col, player_row
+            break
+        
+        if g_Input.correctMove_X == 1 and g_Input.correctMove_Y == 1:
+            g_Input.make_move = 1  
+            return player_col, player_row
 
 def player_input(board):
-    
-    global mouseClicked
-    global correctMove_X
-    global correctMove_Y
         
     while True:
             
             mouse_processor()
             
-            if mouseClicked == True and correctMove_X == True and correctMove_Y == True:
+            if g_Input.make_move == 1:
                 # checks if the selected cell is already used up
                 if not board[player_row][player_col] == "-":
                     print ("Already in use!")
-                    mouseClicked = False
-                    correctMove_X = False
-                    correctMove_Y = False
+                    g_Input.make_move = 0
+                    g_Input.correctMove_X = 0
+                    g_Input.correctMove_Y = 0
                     continue
                 
                 # if all conditions are met, cell is filled with an X
                 else:
                     board[player_row][player_col] = "X"
                     Graphics.draw_symbol(1, player_col, player_row)
-                    mouseClicked = False
-                    correctMove_X = False
-                    correctMove_Y = False
+                    g_Input.make_move = 0
+                    g_Input.correctMove_X = 0
+                    g_Input.correctMove_Y = 0
                     Graphics.window.refresh()
                     break
         
