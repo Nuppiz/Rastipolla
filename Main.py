@@ -29,9 +29,6 @@ def game_loop(board):
     elif Board.draw_check(Gameboard) == 1:
         if Graphics.end_screen(2, Gameboard):
             main()
-        
-Gameboard = []
-Board.init_board(Gameboard)
 
 def main():
     running = True 
@@ -46,5 +43,8 @@ def main():
         for event in events:
             if event.type == sdl2.SDL_QUIT:
                 quit()
-        
-main()
+                
+Gameboard = []
+Board.init_board(Gameboard)
+if Graphics.start_screen():
+    main()

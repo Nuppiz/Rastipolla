@@ -17,6 +17,7 @@ uiprocessor = sdl2.ext.UIProcessor()
 window.show()
 
 # load textures
+splash = sdl2.ext.load_image(res_path.get_path("splash.png"))
 grid = sdl2.ext.load_image(res_path.get_path("grid.png"))
 cross = sdl2.ext.load_image(res_path.get_path("cross.png"))
 nought = sdl2.ext.load_image(res_path.get_path("nought.png"))
@@ -32,29 +33,54 @@ sdl2.SDL_SetColorKey(winner, sdl2.SDL_TRUE, 0xFF00FF)
 sdl2.SDL_SetColorKey(loser, sdl2.SDL_TRUE, 0xFF00FF)
 sdl2.SDL_SetColorKey(tie, sdl2.SDL_TRUE, 0xFF00FF)
 
-# draw background
-color = sdl2.ext.Color(0, 127, 0)
-sdl2.ext.fill(window_surface, color, (0, 0, width, height))
+# load splash screen
+sdl2.SDL_BlitSurface(splash, None, window_surface, None)
 
-# draw grid
-sdl2.SDL_BlitSurface(grid, None, window_surface, None)
+def start_screen():
+    global NewGameClicked
+    NewGameClicked = 0
+    
+    startgame = uifactory.from_image(sdl2.ext.BUTTON, res_path.get_path("start.png"))
+    startgame.position = 220, 270
+    
+    spriterenderer.render((startgame))
+    window.refresh()
+    
+    startgame.click += restart
+    
+    running = True
+    
+    while running:
+        events = sdl2.ext.get_events()
+        for event in events:
+            if event.type == sdl2.SDL_QUIT:
+                quit()
+        
+            uiprocessor.dispatch([startgame], event)
+            
+            if NewGameClicked == 1:
+                NewGameClicked = 0
+                return 1
 
-def draw_cross(x, y):
+def draw_symbol(symbol, x, y):
+    
+    if symbol == 1:
+        symbol = cross
+        
+    elif symbol == 2:
+        symbol = nought
     
     draw_x = 105 + (int(x) * 145) # horizontal draw location
     draw_y = 25 + (int(y) * 145) # vertical draw location
 
-    sdl2.SDL_BlitSurface(cross, None, window_surface, sdl2.SDL_Rect(draw_x, draw_y)) # draw X at the correct grid location
-
-def draw_nought(x, y):
-    
-    draw_x = 105 + (int(x) * 145) # horizontal draw location
-    draw_y = 25 + (int(y) * 145) # vertical draw location
-
-    sdl2.SDL_BlitSurface(nought, None, window_surface, sdl2.SDL_Rect(draw_x, draw_y)) # draw O at the correct grid location
+    sdl2.SDL_BlitSurface(symbol, None, window_surface, sdl2.SDL_Rect(draw_x, draw_y)) # draw X or O at the correct grid location
 
 def clear_screen():
+    # draw background
+    color = sdl2.ext.Color(0, 127, 0)
     sdl2.ext.fill(window_surface, color, (0, 0, width, height))
+
+    # draw grid
     sdl2.SDL_BlitSurface(grid, None, window_surface, None)
     
 def end_screen(ending, board):

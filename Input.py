@@ -85,7 +85,7 @@ def player_input(board):
                 # if all conditions are met, cell is filled with an X
                 else:
                     board[player_row][player_col] = "X"
-                    Graphics.draw_cross(player_col, player_row)
+                    Graphics.draw_symbol(1, player_col, player_row)
                     mouseClicked = False
                     correctMove_X = False
                     correctMove_Y = False
@@ -107,7 +107,7 @@ def ai_input(board):
             continue
         else:
             board[ai_y][ai_x] = "O"
-            Graphics.draw_nought(ai_x, ai_y)
+            Graphics.draw_symbol(2, ai_x, ai_y)
             Graphics.window.refresh()
             break
         if attempts >= max_attempts:
