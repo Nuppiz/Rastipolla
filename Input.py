@@ -1,5 +1,6 @@
 import sdl2.ext
 import Graphics
+import Board
 
 from random import randint
 
@@ -115,64 +116,76 @@ def ai_input(board):
             print("Out of attempts")
         break
 
-def ai_move(board):
-    bestScore = -1000
-    bestMove = None
+def evaluate(board):
     
-    row = 0
-    column = 0
-
-    for column in range(0, 2):
-        column += 1
-        for row in range(0, 2):        
-            if board[row][column] == "-":
+    if Board.check_rows(board, "X") == 1:
+        return -10
+    elif Board.check_rows(board, "O") == 1:
+        return 10
+    
+    if Board.check_columns(board, "X") == 1:
+        return -10
+    elif Board.check_columns(board, "O") == 1:
+        return 10
+    
+    if Board.check_diagonal(board, "X") == 1:
+        return -10
+    elif Board.check_diagonal(board, "O") == 1:
+        return 10
+            
+def ai_move(board):
+    bestVal = -1000
+    bestMove = [-1, -1]
+ 
+    for row in range(3) :    
+        for column in range(3) :
+         
+            # Check if cell is empty
+            if board[row][column] == '-':
+             
+                # Make the move
                 board[row][column] = "O"
-                score = miniMax(board, 0, True)
-                board[row][column] = "-"
-                if score > bestScore:
-                    bestScore = score
-                    board[row][column] = "O"
-                    break
-            row += 1
-            
-scores = {
-    "X": -10,
-    "O": 10,
-    };
-            
+ 
+                # compute evaluation function for this
+                # move.
+                moveVal = miniMax(board, 0, True)
+ 
+                # Undo the move
+                board[row][column] = '-'
+ 
+                # If the value of the current move is
+                # more than the best value, then update
+                # best/
+                if (moveVal > bestVal):               
+                    bestMove = [row, column]
+                    bestVal = moveVal
+    ai_y = bestMove[0]
+    ai_x = bestMove[1]
+    board[ai_y][ai_x] = "O"
+    Graphics.draw_symbol(2, ai_x, ai_y)
+               
 def miniMax(board, depth, isMaximizing):
     
-    row = 0
-    column = 0
+    score = evaluate(board)
     
-    if isMaximizing == True:
-        bestScore = -100
-        
-        for column in range(0, 2):
-            column += 1
-            for row in range(0, 2):  
-        
-                if board[row][column] == "-":
+    if (isMaximizing):
+        best = -1000
+ 
+        for row in range(3):        
+            for column in range(3):
+                if (board[row][column] == '-'):
                     board[row][column] = "O"
-                    score = miniMax(board, depth + 1, False)
-                    board[row][column] = "-"
-                    bestScore = max(score, bestScore)
-                row += 1
-            
-        return bestScore
-    
+                    best = max(best, miniMax(board, depth + 1, not isMaximizing))
+                    board[row][column] = '-'
+        return best
+ 
     else:
-        bestScore = 100
-        
-        for column in range(0, 2):
-            column += 1
-            for row in range(0, 2):  
-        
-                if board[row][column] == "-":
+        best = 1000
+
+        for row in range(3):
+            for column in range(3):
+                if (board[row][column] == '-'):
                     board[row][column] = "X"
-                    score = miniMax(board, depth + 1, True)
-                    board[row][column] = "-"
-                    bestScore = min(score, bestScore)
-                row += 1
-            
-        return bestScore
+                    best = min(best, miniMax(board, depth + 1, not isMaximizing))
+                    board[row][column] = '-'
+        return best

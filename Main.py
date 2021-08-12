@@ -21,7 +21,7 @@ def game_loop(board):
         
     Board.print_board(Gameboard)
     print ("AI's turn")
-    Input.ai_input(Gameboard)
+    Input.ai_move(Gameboard)
     if Board.score_checker(Gameboard, "O") == 1:
         Board.print_board(Gameboard)
         if Graphics.end_screen(3, Gameboard):
