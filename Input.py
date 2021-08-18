@@ -148,14 +148,14 @@ def evaluate(board):
         return -10
  
     # Else if none of them have won then return 0
-    return 0
+    return 1
             
 def ai_move(board):
-    bestVal = -1000
+    bestVal = -2000
     bestMove = [-1, -1]
  
-    for row in range(3) :    
-        for column in range(3) :
+    for row in range(3):    
+        for column in range(3):
          
             # Check if cell is empty
             if board[row][column] == '-':
@@ -173,13 +173,13 @@ def ai_move(board):
                 # If the value of the current move is
                 # more than the best value, then update
                 # best/
-                if moveVal > bestVal:               
+                if moveVal > bestVal:     
+                    bestVal = moveVal          
                     bestMove = [row, column]
-                    bestVal = moveVal
                     
     ai_y = bestMove[0]
     ai_x = bestMove[1]
-    print ("The best move is:",bestMove,"and the value of the best move is :",bestVal)
+    print ("The best AI move is:",bestMove,"and the value of the best move is :",bestVal)
     board[ai_y][ai_x] = "O"
     Graphics.draw_symbol(2, ai_x, ai_y)
     
@@ -210,7 +210,7 @@ def cheater(board):
                     bestMove = [row, column]
                     bestVal = moveVal
                     
-    print ("The best move is:",bestMove,"and the value of the best move is :",bestVal)
+    print ("The best player move is:",bestMove,"and the value of the best move is :",bestVal)
                
 def miniMax(board, depth, isMaximizing):
     
@@ -226,23 +226,25 @@ def miniMax(board, depth, isMaximizing):
         return 0
     
     if isMaximizing == True:
-        best = -inf
+        best = -1000
  
         for row in range(3):        
             for column in range(3):
                 if board[row][column] == '-':
                     board[row][column] = "X"
-                    best = max(best, miniMax(board, depth + 1, False))
+                    score = miniMax(board, depth + 1, False)
                     board[row][column] = '-'
+                    best = max(score, best)
         return best
- 
+
     else:
-        best = inf
+        best = 1000
 
         for row in range(3):
             for column in range(3):
                 if board[row][column] == '-':
                     board[row][column] = "O"
-                    best = min(best, miniMax(board, depth + 1, False))
+                    score = miniMax(board, depth + 1, True)
                     board[row][column] = '-'
+                    best = min(score, best)
         return best
