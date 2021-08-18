@@ -123,28 +123,28 @@ def evaluate(board):
     
     # Checking for Rows for X or O victory.
     for row in range(3):    
-        if board[row][0] and board[row][1] and board[row][2] == "X":       
+        if board[row][0] == "X" and board[row][1] == "X" and board[row][2] == "X":       
             return 10
-        elif board[row][0] and board[row][1] and board[row][2] == "O":
+        elif board[row][0] == "O" and board[row][1] == "O" and board[row][2] == "O":
             return -10
  
     # Checking for Columns for X or O victory.
     for col in range(3):
-        if board[0][col] and board[1][col] and board[2][col] == "X":
+        if board[0][col] == "X" and board[1][col] == "X" and board[2][col] == "X":
             return 10
          
-        elif board[0][col] and board[1][col] and board[2][col] == "O":
+        elif board[0][col] == "O" and board[1][col] == "O" and board[2][col] == "O":
             return -10
  
     # Checking for Diagonals for X or O victory.
-    if board[0][0] and board[1][1] and board[2][2] == "X":
+    if board[0][0] == "X" and board[1][1] == "X" and board[2][2] == "X":
         return 10
-    elif board[0][0] and board[1][1] and board[2][2] == "O":
+    elif board[0][0] == "O" and board[1][1] == "O" and board[2][2] == "O":
         return -10
  
-    if board[0][2] and board[1][1] and board[2][0] == "X":
+    if board[0][2] == "X" and board[1][1] == "X" and board[2][0] == "X":
         return 10
-    elif board[0][2] and board[1][1] and board[2][0] == "O":
+    elif board[0][2] == "O" and board[1][1] == "O" and board[2][0] == "O":
         return -10
  
     # Else if none of them have won then return 0
