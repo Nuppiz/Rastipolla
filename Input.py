@@ -148,7 +148,7 @@ def evaluate(board):
         return -10
  
     # Else if none of them have won then return 0
-    return 1
+    return 0
             
 def ai_move(board):
     bestVal = -2000
@@ -217,10 +217,10 @@ def miniMax(board, depth, isMaximizing):
     points = evaluate(board)
  
     if points == 10:
-        return points
+        return points - depth
  
     if points == -10:
-        return points
+        return points + depth
     
     if Board.count_chars(board, '-') == 0:
         return 0
@@ -232,7 +232,7 @@ def miniMax(board, depth, isMaximizing):
             for column in range(3):
                 if board[row][column] == '-':
                     board[row][column] = "X"
-                    score = miniMax(board, depth + 1, False)
+                    score = miniMax(board, depth + 1, True)
                     board[row][column] = '-'
                     best = max(score, best)
         return best
@@ -244,7 +244,7 @@ def miniMax(board, depth, isMaximizing):
             for column in range(3):
                 if board[row][column] == '-':
                     board[row][column] = "O"
-                    score = miniMax(board, depth + 1, True)
+                    score = miniMax(board, depth + 1, False)
                     board[row][column] = '-'
                     best = min(score, best)
         return best
