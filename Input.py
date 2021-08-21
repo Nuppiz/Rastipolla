@@ -217,10 +217,10 @@ def miniMax(board, depth, isMaximizing):
     points = evaluate(board)
  
     if points == 10:
-        return points
+        return points - depth
  
     if points == -10:
-        return points
+        return points + depth
     
     if Board.count_chars(board, '-') == 0:
         return 0
