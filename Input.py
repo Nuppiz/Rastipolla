@@ -134,7 +134,7 @@ def evaluate(board):
             return 10
          
         elif board[0][col] == "O" and board[1][col] == "O" and board[2][col] == "O":
-            return -10
+            return -5
  
     # Checking for Diagonals for X or O victory.
     if board[0][0] == "X" and board[1][1] == "X" and board[2][2] == "X":
@@ -148,10 +148,10 @@ def evaluate(board):
         return -10
  
     # Else if none of them have won then return 0
-    return 1
+    return 0
             
 def ai_move(board):
-    bestVal = -2000
+    bestVal = -1000
     bestMove = [-1, -1]
  
     for row in range(3):    
