@@ -114,25 +114,26 @@ def ai_input(board):
             break
 
 def cheater(board):
-    bestVal = 1000
+    bestVal = -1000
     bestMove = [-1, -1]
+
+    movesLeft = Board.count_chars(board, '-')
  
-    for row in range(3):    
+    for row in range(3):
         for column in range(3):
-         
-            # Check if cell is empty
             if board[row][column] == '-':
-             
+                
                 # Make the move
                 board[row][column] = "O"
- 
+
                 # compute evaluation function for this
                 # move.
-                moveVal = minimax(board, column, row)
- 
+                moveVal = minimax(board, column, row, "O")
+
                 # Undo the move
                 board[row][column] = '-'
- 
+                movesLeft -= 1
+
                 # If the value of the current move is
                 # more than the best value, then update
                 # best/
@@ -147,32 +148,42 @@ def evaluate(board):
         return 1
 
     elif Board.score_checker(board, "O") == 1:
-        return 2
+        return -1
 
     else:
         return 0
 
-def minimax(board, x, y):
-    score = 0
+def minimax(board, x, y, character):
 
     result = evaluate(board)
  
     if result == 1:
-        return 1
+        return 10
  
-    if result == 2:
-        return -1
+    if result == -1:
+        return -10
 
     if Board.count_chars(board, '-') == 0:
         return 0
 
-    best = 0
+    scores = []
 
-    for y in range(3):
-        for x in range(3):
-            if board[y][x] == '-':
-                board[y][x] = "O"
-                score = score + minimax(board, x, y)
-                board[y][x] = '-'
-                best = min(score, best)
-    return best
+    if character == "X":
+        for y in range(3):
+            for x in range(3):
+                if board[y][x] == '-':
+                    board[y][x] = "X"
+                    score = minimax(board, x, y, "X")
+                    scores.append(score)
+                    board[y][x] = '-'
+        return max(scores)
+
+    elif character == "O":
+        for y in range(3):
+            for x in range(3):
+                if board[y][x] == '-':
+                    board[y][x] = "O"
+                    score = minimax(board, x, y, "O")
+                    scores.append(score)
+                    board[y][x] = '-'
+        return min(scores)
