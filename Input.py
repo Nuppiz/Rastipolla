@@ -98,8 +98,6 @@ def player_input(board):
                     break
         
 def ai_input(board):
-    attempts = 0
-    max_attempts = 20
 
     while True:
     # randint to generate a random pair of coordinates
@@ -108,50 +106,15 @@ def ai_input(board):
     
         # checks that the cell is empty, if not, try again with new coords
         if board[ai_y][ai_x] != "-":
-            attempts += 1
             continue
         else:
             board[ai_y][ai_x] = "O"
             Graphics.draw_symbol(2, ai_x, ai_y)
             Graphics.window.refresh()
             break
-        if attempts >= max_attempts:
-            print("Out of attempts")
-        break
 
-def evaluate(board):
-    
-    # Checking for Rows for X or O victory.
-    for row in range(3):    
-        if board[row][0] == "X" and board[row][1] == "X" and board[row][2] == "X":       
-            return 10
-        elif board[row][0] == "O" and board[row][1] == "O" and board[row][2] == "O":
-            return -10
- 
-    # Checking for Columns for X or O victory.
-    for col in range(3):
-        if board[0][col] == "X" and board[1][col] == "X" and board[2][col] == "X":
-            return 10
-         
-        elif board[0][col] == "O" and board[1][col] == "O" and board[2][col] == "O":
-            return -10
- 
-    # Checking for Diagonals for X or O victory.
-    if board[0][0] == "X" and board[1][1] == "X" and board[2][2] == "X":
-        return 10
-    elif board[0][0] == "O" and board[1][1] == "O" and board[2][2] == "O":
-        return -10
- 
-    if board[0][2] == "X" and board[1][1] == "X" and board[2][0] == "X":
-        return 10
-    elif board[0][2] == "O" and board[1][1] == "O" and board[2][0] == "O":
-        return -10
- 
-    # Else if none of them have won then return 0
-    return 0
-            
-def ai_move(board):
-    bestVal = -2000
+def cheater(board):
+    bestVal = 1000
     bestMove = [-1, -1]
  
     for row in range(3):    
@@ -165,40 +128,7 @@ def ai_move(board):
  
                 # compute evaluation function for this
                 # move.
-                moveVal = miniMax(board, 0, False)
- 
-                # Undo the move
-                board[row][column] = '-'
- 
-                # If the value of the current move is
-                # more than the best value, then update
-                # best/
-                if moveVal > bestVal:     
-                    bestVal = moveVal          
-                    bestMove = [row, column]
-                    
-    ai_y = bestMove[0]
-    ai_x = bestMove[1]
-    print ("The best AI move is:",bestMove,"and the value of the best move is :",bestVal)
-    board[ai_y][ai_x] = "O"
-    Graphics.draw_symbol(2, ai_x, ai_y)
-    
-def cheater(board):
-    bestVal = -1000
-    bestMove = [-1, -1]
- 
-    for row in range(3) :    
-        for column in range(3) :
-         
-            # Check if cell is empty
-            if board[row][column] == '-':
-             
-                # Make the move
-                board[row][column] = "X"
- 
-                # compute evaluation function for this
-                # move.
-                moveVal = miniMax(board, 0, True)
+                moveVal = minimax(board, column, row)
  
                 # Undo the move
                 board[row][column] = '-'
@@ -210,41 +140,39 @@ def cheater(board):
                     bestMove = [row, column]
                     bestVal = moveVal
                     
-    print ("The best player move is:",bestMove,"and the value of the best move is :",bestVal)
-               
-def miniMax(board, depth, isMaximizing):
-    
-    points = evaluate(board)
- 
-    if points == 10:
-        return points - depth
- 
-    if points == -10:
-        return points + depth
-    
-    if Board.count_chars(board, '-') == 0:
-        return 0
-    
-    if isMaximizing == True:
-        best = -1000
- 
-        for row in range(3):        
-            for column in range(3):
-                if board[row][column] == '-':
-                    board[row][column] = "X"
-                    score = miniMax(board, depth + 1, True)
-                    board[row][column] = '-'
-                    best = max(score, best)
-        return best
+    print ("The best AI move is:",bestMove,"and the value of the best move is :",bestVal)
+
+def evaluate(board):
+    if Board.score_checker(board, "X") == 1:
+        return 1
+
+    elif Board.score_checker(board, "O") == 1:
+        return 2
 
     else:
-        best = 1000
+        return 0
 
-        for row in range(3):
-            for column in range(3):
-                if board[row][column] == '-':
-                    board[row][column] = "O"
-                    score = miniMax(board, depth + 1, False)
-                    board[row][column] = '-'
-                    best = min(score, best)
-        return best
+def minimax(board, x, y):
+    score = 0
+
+    result = evaluate(board)
+ 
+    if result == 1:
+        return 1
+ 
+    if result == 2:
+        return -1
+
+    if Board.count_chars(board, '-') == 0:
+        return 0
+
+    best = 0
+
+    for y in range(3):
+        for x in range(3):
+            if board[y][x] == '-':
+                board[y][x] = "O"
+                score = score + minimax(board, x, y)
+                board[y][x] = '-'
+                best = min(score, best)
+    return best
