@@ -82,3 +82,12 @@ def draw_check(board):
         return 1
     else:
         return 0
+
+# function to check the current status of the given cell
+def check_status(board, y, x):
+    if board[y][x] == "-":
+        return 0
+    elif board[y][x] == "X":
+        return 1
+    elif board[y][x] == "O":
+        return 2

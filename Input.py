@@ -3,7 +3,6 @@ import Graphics
 import Board
 
 from random import randint
-from math import inf
 
 # functions controlling player and AI input
 
@@ -97,8 +96,75 @@ def player_input(board):
                     Graphics.window.refresh()
                     break
         
-def ai_input(board):
+def ai_first(board):
+    # if this function is used, AI will always go for 1, 1 coordinates on its first turn
 
+    board[1][1] = "O"
+    Graphics.draw_symbol(2, 1, 1)
+    Graphics.window.refresh()
+
+def cheater(board):
+
+    bestVal = -1000
+    bestMove = [-1, -1]
+ 
+    for row in range(3):
+        for column in range(3):
+            if board[row][column] == '-':
+                
+                # Make the move
+                board[row][column] = "O"
+
+                # compute evaluation function for this
+                # move.
+                moveVal = minimax(board, True, 0)
+
+                # Undo the move
+                board[row][column] = '-'
+
+                # If the value of the current move is
+                # more than the best value, then update
+                # best/
+                if moveVal > bestVal:               
+                    bestMove = [row, column]
+                    bestVal = moveVal
+                    
+    print ("The best player move is:",bestMove,"and the value of the best move is :",bestVal)
+
+def ai_move(board):
+    # AI function that uses minimax to determine the best move
+    bestVal = 1000
+    bestMove = [-1, -1]
+ 
+    for row in range(3):
+        for column in range(3):
+            if board[row][column] == '-':
+                
+                # Make the move
+                board[row][column] = "O"
+
+                # compute evaluation function for this
+                # move.
+                moveVal = minimax(board, False, 0)
+
+                # Undo the move
+                board[row][column] = '-'
+
+                # If the value of the current move is
+                # more than the best value, then update
+                # best/
+                if moveVal < bestVal:               
+                    bestMove = [row, column]
+                    bestVal = moveVal
+
+    ai_y = bestMove[0]
+    ai_x = bestMove[1]
+    print ("The best AI move is:",bestMove,"and the value of the best move is :", bestVal)
+    board[ai_y][ai_x] = "O"
+    Graphics.draw_symbol(2, ai_x, ai_y)
+
+def ai_random(board):
+    # alternative AI function that just chooses random coordinates
     while True:
     # randint to generate a random pair of coordinates
         ai_y = randint(0, len(board) - 1)
@@ -113,77 +179,45 @@ def ai_input(board):
             Graphics.window.refresh()
             break
 
-def cheater(board):
-    bestVal = -1000
-    bestMove = [-1, -1]
-
-    movesLeft = Board.count_chars(board, '-')
- 
-    for row in range(3):
-        for column in range(3):
-            if board[row][column] == '-':
-                
-                # Make the move
-                board[row][column] = "O"
-
-                # compute evaluation function for this
-                # move.
-                moveVal = minimax(board, column, row, "O")
-
-                # Undo the move
-                board[row][column] = '-'
-                movesLeft -= 1
-
-                # If the value of the current move is
-                # more than the best value, then update
-                # best/
-                if moveVal > bestVal:               
-                    bestMove = [row, column]
-                    bestVal = moveVal
-                    
-    print ("The best AI move is:",bestMove,"and the value of the best move is :",bestVal)
-
 def evaluate(board):
     if Board.score_checker(board, "X") == 1:
-        return 1
+        return 10
 
     elif Board.score_checker(board, "O") == 1:
-        return -1
+        return -10
 
     else:
         return 0
 
-def minimax(board, x, y, character):
+def minimax(board, isMax, depth):
 
     result = evaluate(board)
  
-    if result == 1:
-        return 10
+    if result == 10:
+        return result - depth
  
-    if result == -1:
-        return -10
+    if result == -10:
+        return result + depth
 
     if Board.count_chars(board, '-') == 0:
         return 0
 
-    scores = []
-
-    if character == "X":
+    if isMax == True:
+        best = -1000
         for y in range(3):
             for x in range(3):
                 if board[y][x] == '-':
                     board[y][x] = "X"
-                    score = minimax(board, x, y, "X")
-                    scores.append(score)
+                    best = max(best, minimax(board, False, depth + 1))
                     board[y][x] = '-'
-        return max(scores)
+        return best
 
-    elif character == "O":
+    elif isMax == False:
+        best = 1000
         for y in range(3):
             for x in range(3):
                 if board[y][x] == '-':
                     board[y][x] = "O"
-                    score = minimax(board, x, y, "O")
-                    scores.append(score)
+                    best = min(best, minimax(board, True, depth + 1))
                     board[y][x] = '-'
-        return min(scores)
+        return best
