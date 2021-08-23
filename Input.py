@@ -129,9 +129,26 @@ def cheater(board):
                     bestMove = [row, column]
                     bestVal = moveVal
                     
-    print ("The best player move is:",bestMove,"and the value of the best move is :",bestVal)
+    print ("The best player move is:",bestMove,"and the value of the best move is:",bestVal)
+
+def ai_prevent_player_win(board):
+    for y in range (3):
+        for x in range(3):
+            if board[y][x] == "-": # checks that the cell is empty
+                board[y][x] = "X" # put a temporary X in the chosen cell
+
+                # if that X would result in a player win, switch it to O to prevent it
+                if Board.score_checker(board, "X") == 1:
+                    board[y][x] = "O"
+                    Graphics.draw_symbol(2, x, y)
+                    return True
+                # else erase the temporary X and try again
+                else:
+                    board[y][x] = "-"
+    return False
 
 def ai_move(board):
+
     # AI function that uses minimax to determine the best move
     bestVal = 1000
     bestMove = [-1, -1]
@@ -151,7 +168,7 @@ def ai_move(board):
                 board[row][column] = '-'
 
                 # If the value of the current move is
-                # more than the best value, then update
+                # less than the best value, then update
                 # best/
                 if moveVal < bestVal:               
                     bestMove = [row, column]
@@ -159,9 +176,16 @@ def ai_move(board):
 
     ai_y = bestMove[0]
     ai_x = bestMove[1]
-    print ("The best AI move is:",bestMove,"and the value of the best move is :", bestVal)
+    print ("The best AI move is:",bestMove,"and the value of the best move is:",bestVal)
     board[ai_y][ai_x] = "O"
     Graphics.draw_symbol(2, ai_x, ai_y)
+    return True
+
+def ai_logic(board):
+    success = ai_prevent_player_win(board)
+
+    if success == False:
+        ai_move(board)
 
 def ai_random(board):
     # alternative AI function that just chooses random coordinates

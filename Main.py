@@ -13,7 +13,7 @@ def game_loop(board):
     if Board.count_chars(board, "-") == 9: # if AI starts first, its first move will be random to give it some extra flavor
         Input.ai_random(Gameboard)
     else:
-        Input.ai_move(Gameboard)
+        Input.ai_logic(Gameboard)
     if Board.score_checker(Gameboard, "O") == 1:
         Board.print_board(Gameboard)
         if Graphics.end_screen(3, Gameboard):
