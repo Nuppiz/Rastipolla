@@ -96,15 +96,60 @@ def player_input(board):
                     Graphics.window.refresh()
                     break
         
-def ai_first(board):
+def ai_one_and_one(board):
     # if this function is used, AI will always go for 1, 1 coordinates on its first turn
 
     board[1][1] = "O"
     Graphics.draw_symbol(2, 1, 1)
     Graphics.window.refresh()
 
-def cheater(board):
+def ai_first(board):
+    # before the AI makes its first move, it checks for the best cell to start from
+    # based on how much empty space there is around the selected cell
+    desirability = 0
+    max_desirability = 0
+    best_move = [0, 0]
 
+    for y in range(3):
+        for x in range(3):
+            if board[y][x] == "-":
+                board[y][x] = "O"
+                # add desirability if there's empty room around the cell, within the boundaries of the board
+                if y > 0 and board[y-1][x] == "-":
+                    desirability += 1
+                if y > 0 and x > 0 and board[y-1][x-1] == "-":
+                    desirability += 1
+                if y > 0 and x < 2 and board[y-1][x+1] == "-":
+                    desirability += 1
+                if x > 0 and board[y][x-1] == "-":
+                    desirability += 1
+                if y < 2 and board[y+1][x] == "-":
+                    desirability += 1
+                if x < 2 and board[y][x+1] == "-":
+                    desirability += 1
+                if y < 2 and x > 0 and board[y-1][x-1] == "-":
+                    desirability += 1
+                if y < 2 and x < 2 and board[y+1][x+1] == "-":
+                    desirability += 1
+                # reduce desirability if the marker is on the edge of the board
+                if ((y-1) < 0):
+                    desirability -= 1
+                if ((y+1) > 2):
+                    desirability -= 1
+                if ((x-1) < 0):
+                    desirability -= 1
+                if ((x+1) > 2):
+                    desirability -= 1
+            if desirability >= max_desirability:
+                max_desirability = desirability
+                best_move = [y, x]
+            board[y][x] = "-"
+            desirability = 0
+    board[best_move[0]][best_move[1]] = "O"
+    Graphics.draw_symbol(2, best_move[1], best_move[0])
+
+def cheater(board):
+    # tells the player their best possible move
     bestVal = -1000
     bestMove = [-1, -1]
  
@@ -113,7 +158,7 @@ def cheater(board):
             if board[row][column] == '-':
                 
                 # Make the move
-                board[row][column] = "O"
+                board[row][column] = "X"
 
                 # compute evaluation function for this
                 # move.
@@ -177,7 +222,7 @@ def ai_move(board):
     ai_y = bestMove[0]
     ai_x = bestMove[1]
     print ("The best AI move is:",bestMove,"and the value of the best move is:",bestVal)
-    board[ai_y][ai_x] = "O"
+    board[bestMove[0]][bestMove[1]] = "O"
     Graphics.draw_symbol(2, ai_x, ai_y)
     return True
 

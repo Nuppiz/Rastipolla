@@ -79,6 +79,7 @@ def count_chars(board, char):
 def draw_check(board):
     if count_chars(board, '-') == 0:
         print ("Board full, it's a draw!")
+        print_board(board)
         return 1
     else:
         return 0
