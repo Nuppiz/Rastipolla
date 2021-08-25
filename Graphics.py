@@ -62,10 +62,10 @@ def start_screen():
 
 def draw_symbol(symbol, x, y):
     
-    if symbol == 1:
+    if symbol == "X":
         symbol = textures["cross"]
         
-    elif symbol == 2:
+    elif symbol == "O":
         symbol = textures["nought"]
     
     draw_x = 105 + (int(x) * 145) # horizontal draw location

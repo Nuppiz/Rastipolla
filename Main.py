@@ -3,18 +3,18 @@ import Graphics
 import Board
 import Input
 
-def game_loop(board):
+def game_loop(board, player_symbol, ai_symbol):
     
     global NewGameClicked
     NewGameClicked = 0
 
     Board.print_board(Gameboard)
     print ("AI's turn")
-    if Board.count_chars(board, "-") == 9: # if AI starts first, its first move will be random to give it some extra flavor
-        Input.ai_first(Gameboard)
+    if Board.count_chars(board, "-") > 7: # on the first turn, the AI uses a different logic for determining its first move
+        Input.ai_first(Gameboard, ai_symbol)
     else:
-        Input.ai_logic(Gameboard)
-    if Board.score_checker(Gameboard, "O") == 1:
+        Input.ai_logic(Gameboard, ai_symbol, player_symbol)
+    if Board.score_checker(Gameboard, ai_symbol) == 1:
         Board.print_board(Gameboard)
         if Graphics.end_screen(3, Gameboard):
             main()
@@ -25,8 +25,8 @@ def game_loop(board):
     
     Board.print_board(Gameboard)
     print ("Player 1's turn")
-    Input.player_input(Gameboard)
-    if Board.score_checker(Gameboard, "X") == 1:
+    Input.player_input(Gameboard, player_symbol)
+    if Board.score_checker(Gameboard, player_symbol) == 1:
         Board.print_board(Gameboard)
         if Graphics.end_screen(1, Gameboard):
             main()
@@ -42,7 +42,7 @@ def main():
     
     while running == True:
         Graphics.window.refresh()
-        game_loop(Gameboard)
+        game_loop(Gameboard, "X", "O")
         events = sdl2.ext.get_events()
         for event in events:
             if event.type == sdl2.SDL_QUIT:

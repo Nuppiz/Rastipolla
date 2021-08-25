@@ -85,10 +85,10 @@ def draw_check(board):
         return 0
 
 # function to check the current status of the given cell
-def check_status(board, y, x):
+def check_status(board, y, x, player_symbol, ai_symbol):
     if board[y][x] == "-":
         return 0
-    elif board[y][x] == "X":
+    elif board[y][x] == player_symbol:
         return 1
-    elif board[y][x] == "O":
+    elif board[y][x] == ai_symbol:
         return 2

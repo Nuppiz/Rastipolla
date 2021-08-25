@@ -17,7 +17,7 @@ class Input:
 
 g_Input = Input()
 
-def mouse_processor(board):
+def mouse_processor(board, player_symbol):
     
     events = sdl2.ext.get_events()
     Graphics.window.refresh()
@@ -33,7 +33,7 @@ def mouse_processor(board):
             if event.button.button == sdl2.SDL_BUTTON_LEFT:   
                 check_cursor(g_Input.mouse_x, g_Input.mouse_y)
             if event.button.button == sdl2.SDL_BUTTON_RIGHT:   
-                cheater(board)
+                cheater(board, player_symbol)
     
 def check_cursor(mouse_x, mouse_y):
     
@@ -71,11 +71,11 @@ def check_cursor(mouse_x, mouse_y):
             g_Input.make_move = 1  
             return player_col, player_row
 
-def player_input(board):
+def player_input(board, player_symbol):
         
     while True:
             
-            mouse_processor(board)
+            mouse_processor(board, player_symbol)
             
             if g_Input.make_move == 1:
                 # checks if the selected cell is already used up
@@ -88,67 +88,70 @@ def player_input(board):
                 
                 # if all conditions are met, cell is filled with an X
                 else:
-                    board[player_row][player_col] = "X"
-                    Graphics.draw_symbol(1, player_col, player_row)
+                    board[player_row][player_col] = player_symbol
+                    Graphics.draw_symbol(player_symbol, player_col, player_row)
                     g_Input.make_move = 0
                     g_Input.correctMove_X = 0
                     g_Input.correctMove_Y = 0
                     Graphics.window.refresh()
                     break
         
-def ai_one_and_one(board):
+def ai_one_and_one(board, ai_symbol):
     # if this function is used, AI will always go for 1, 1 coordinates on its first turn
 
-    board[1][1] = "O"
-    Graphics.draw_symbol(2, 1, 1)
+    board[1][1] = ai_symbol
+    Graphics.draw_symbol(ai_symbol, 1, 1)
     Graphics.window.refresh()
 
-def ai_first(board):
+def ai_first(board, ai_symbol):
     # before the AI makes its first move, it checks for the best cell to start from
     # based on how much empty space there is around the selected cell
-    desirability = 0
-    max_desirability = 0
+    empty_space = 0
+    max_empty_space = 0 # how much empty space there is around the cell that has the most of it
     best_move = [0, 0]
 
     for y in range(3):
         for x in range(3):
             if board[y][x] == "-":
-                board[y][x] = "O"
-                # add desirability if there's empty room around the cell, within the boundaries of the board
-                if y > 0 and board[y-1][x] == "-":
-                    desirability += 1
-                if y > 0 and x > 0 and board[y-1][x-1] == "-":
-                    desirability += 1
-                if y > 0 and x < 2 and board[y-1][x+1] == "-":
-                    desirability += 1
-                if x > 0 and board[y][x-1] == "-":
-                    desirability += 1
-                if y < 2 and board[y+1][x] == "-":
-                    desirability += 1
-                if x < 2 and board[y][x+1] == "-":
-                    desirability += 1
-                if y < 2 and x > 0 and board[y-1][x-1] == "-":
-                    desirability += 1
-                if y < 2 and x < 2 and board[y+1][x+1] == "-":
-                    desirability += 1
-                # reduce desirability if the marker is on the edge of the board
-                if ((y-1) < 0):
-                    desirability -= 1
-                if ((y+1) > 2):
-                    desirability -= 1
-                if ((x-1) < 0):
-                    desirability -= 1
-                if ((x+1) > 2):
-                    desirability -= 1
-            if desirability >= max_desirability:
-                max_desirability = desirability
+                board[y][x] = ai_symbol
+                # check for empty space around the cell within the boundaries of the board
+                empty_space = check_surroundings(board, y, x)
+            if empty_space >= max_empty_space:
+                max_empty_space = empty_space
                 best_move = [y, x]
             board[y][x] = "-"
-            desirability = 0
-    board[best_move[0]][best_move[1]] = "O"
-    Graphics.draw_symbol(2, best_move[1], best_move[0])
+            empty_space = 0
+    board[best_move[0]][best_move[1]] = ai_symbol
+    Graphics.draw_symbol(ai_symbol, best_move[1], best_move[0])
 
-def cheater(board):
+def check_surroundings(board, row, column):
+
+    # set the boundaries of the grid
+    top = -1
+    bottom = 1
+    left = -1
+    right = 1
+
+    empty_space = 0
+
+    if row + top < 0: # prevent the function from checking cells beyond the top boundary
+        top = 0
+    if row + bottom > 2: # prevent the function from checking cells beyond the bottom boundary
+        bottom = 0
+    
+    if column + left < 0: # prevent the function from checking cells beyond the left boundary
+        left = 0
+    if column + right > 2: # prevent the function from checking cells beyond the right boundary
+        right = 0
+
+    # check for empty spaces around the given cell, and finally return that amount to the main function
+    for y in range(top, bottom + 1):
+        for x in range(left, right + 1):
+            if board[row + y][column + x] == '-':
+                empty_space += 1
+    return empty_space
+
+def cheater(board, player_symbol):
     # tells the player their best possible move
     bestVal = -1000
     bestMove = [-1, -1]
@@ -158,7 +161,7 @@ def cheater(board):
             if board[row][column] == '-':
                 
                 # Make the move
-                board[row][column] = "X"
+                board[row][column] = player_symbol
 
                 # compute evaluation function for this
                 # move.
@@ -176,23 +179,23 @@ def cheater(board):
                     
     print ("The best player move is:",bestMove,"and the value of the best move is:",bestVal)
 
-def ai_prevent_player_win(board):
+def ai_prevent_player_win(board, player_symbol, ai_symbol):
     for y in range (3):
         for x in range(3):
             if board[y][x] == "-": # checks that the cell is empty
-                board[y][x] = "X" # put a temporary X in the chosen cell
+                board[y][x] = player_symbol # put a temporary X in the chosen cell
 
                 # if that X would result in a player win, switch it to O to prevent it
-                if Board.score_checker(board, "X") == 1:
-                    board[y][x] = "O"
-                    Graphics.draw_symbol(2, x, y)
+                if Board.score_checker(board, player_symbol) == 1:
+                    board[y][x] = ai_symbol
+                    Graphics.draw_symbol(ai_symbol, x, y)
                     return True
                 # else erase the temporary X and try again
                 else:
                     board[y][x] = "-"
     return False
 
-def ai_move(board):
+def ai_move(board, player_symbol, ai_symbol):
 
     # AI function that uses minimax to determine the best move
     bestVal = 1000
@@ -203,11 +206,11 @@ def ai_move(board):
             if board[row][column] == '-':
                 
                 # Make the move
-                board[row][column] = "O"
+                board[row][column] = ai_symbol
 
                 # compute evaluation function for this
                 # move.
-                moveVal = minimax(board, False, 0)
+                moveVal = minimax(board, False, 0, player_symbol, ai_symbol)
 
                 # Undo the move
                 board[row][column] = '-'
@@ -219,20 +222,18 @@ def ai_move(board):
                     bestMove = [row, column]
                     bestVal = moveVal
 
-    ai_y = bestMove[0]
-    ai_x = bestMove[1]
     print ("The best AI move is:",bestMove,"and the value of the best move is:",bestVal)
-    board[bestMove[0]][bestMove[1]] = "O"
-    Graphics.draw_symbol(2, ai_x, ai_y)
+    board[bestMove[0]][bestMove[1]] = ai_symbol
+    Graphics.draw_symbol(ai_symbol, bestMove[1], bestMove[0])
     return True
 
-def ai_logic(board):
-    success = ai_prevent_player_win(board)
+def ai_logic(board, ai_symbol, player_symbol):
+    success = ai_prevent_player_win(board, player_symbol, ai_symbol, )
 
     if success == False:
-        ai_move(board)
+        ai_move(board, player_symbol, ai_symbol)
 
-def ai_random(board):
+def ai_random(board, ai_symbol):
     # alternative AI function that just chooses random coordinates
     while True:
     # randint to generate a random pair of coordinates
@@ -243,24 +244,24 @@ def ai_random(board):
         if board[ai_y][ai_x] != "-":
             continue
         else:
-            board[ai_y][ai_x] = "O"
-            Graphics.draw_symbol(2, ai_x, ai_y)
+            board[ai_y][ai_x] = ai_symbol
+            Graphics.draw_symbol(ai_symbol, ai_x, ai_y)
             Graphics.window.refresh()
             break
 
-def evaluate(board):
-    if Board.score_checker(board, "X") == 1:
+def evaluate(board, player_symbol, ai_symbol):
+    if Board.score_checker(board, player_symbol) == 1:
         return 10
 
-    elif Board.score_checker(board, "O") == 1:
+    elif Board.score_checker(board, ai_symbol) == 1:
         return -10
 
     else:
         return 0
 
-def minimax(board, isMax, depth):
+def minimax(board, isMax, depth, player_symbol, ai_symbol):
 
-    result = evaluate(board)
+    result = evaluate(board, player_symbol, ai_symbol)
  
     if result == 10:
         return result - depth
@@ -276,8 +277,8 @@ def minimax(board, isMax, depth):
         for y in range(3):
             for x in range(3):
                 if board[y][x] == '-':
-                    board[y][x] = "X"
-                    best = max(best, minimax(board, False, depth + 1))
+                    board[y][x] = player_symbol
+                    best = max(best, minimax(board, False, depth + 1, player_symbol, ai_symbol))
                     board[y][x] = '-'
         return best
 
@@ -286,7 +287,7 @@ def minimax(board, isMax, depth):
         for y in range(3):
             for x in range(3):
                 if board[y][x] == '-':
-                    board[y][x] = "O"
-                    best = min(best, minimax(board, True, depth + 1))
+                    board[y][x] = ai_symbol
+                    best = min(best, minimax(board, True, depth + 1, player_symbol, ai_symbol))
                     board[y][x] = '-'
         return best
