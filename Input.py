@@ -89,19 +89,10 @@ def player_input(board, player_symbol):
                 # if all conditions are met, cell is filled with an X
                 else:
                     board[player_row][player_col] = player_symbol
-                    Graphics.draw_symbol(player_symbol, player_col, player_row)
                     g_Input.make_move = 0
                     g_Input.correctMove_X = 0
                     g_Input.correctMove_Y = 0
-                    Graphics.window.refresh()
                     break
-        
-def ai_one_and_one(board, ai_symbol):
-    # if this function is used, AI will always go for 1, 1 coordinates on its first turn
-
-    board[1][1] = ai_symbol
-    Graphics.draw_symbol(ai_symbol, 1, 1)
-    Graphics.window.refresh()
 
 def ai_first(board, ai_symbol):
     # before the AI makes its first move, it checks for the best cell to start from
@@ -122,7 +113,6 @@ def ai_first(board, ai_symbol):
             board[y][x] = "-"
             empty_space = 0
     board[best_move[0]][best_move[1]] = ai_symbol
-    Graphics.draw_symbol(ai_symbol, best_move[1], best_move[0])
 
 def check_surroundings(board, row, column):
 
@@ -186,9 +176,8 @@ def ai_prevent_player_win(board, player_symbol, ai_symbol):
                 board[y][x] = player_symbol # put a temporary X in the chosen cell
 
                 # if that X would result in a player win, switch it to O to prevent it
-                if Board.score_checker(board, player_symbol) == 1:
+                if Board.victory_check(board, player_symbol) == 1:
                     board[y][x] = ai_symbol
-                    Graphics.draw_symbol(ai_symbol, x, y)
                     return True
                 # else erase the temporary X and try again
                 else:
@@ -222,13 +211,11 @@ def ai_move(board, player_symbol, ai_symbol):
                     bestMove = [row, column]
                     bestVal = moveVal
 
-    print ("The best AI move is:",bestMove,"and the value of the best move is:",bestVal)
     board[bestMove[0]][bestMove[1]] = ai_symbol
-    Graphics.draw_symbol(ai_symbol, bestMove[1], bestMove[0])
     return True
 
 def ai_logic(board, ai_symbol, player_symbol):
-    success = ai_prevent_player_win(board, player_symbol, ai_symbol, )
+    success = ai_prevent_player_win(board, player_symbol, ai_symbol)
 
     if success == False:
         ai_move(board, player_symbol, ai_symbol)
@@ -245,15 +232,14 @@ def ai_random(board, ai_symbol):
             continue
         else:
             board[ai_y][ai_x] = ai_symbol
-            Graphics.draw_symbol(ai_symbol, ai_x, ai_y)
-            Graphics.window.refresh()
             break
 
 def evaluate(board, player_symbol, ai_symbol):
-    if Board.score_checker(board, player_symbol) == 1:
+
+    if Board.victory_check(board, player_symbol) == 1:
         return 10
 
-    elif Board.score_checker(board, ai_symbol) == 1:
+    elif Board.victory_check(board, ai_symbol) == 1:
         return -10
 
     else:

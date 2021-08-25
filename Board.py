@@ -12,12 +12,11 @@ def print_board(board):
 
 # clear the board when a new game is started        
 def clear_board(board):
-    for row in range(0,len(board)):
-        for column in range(0,len(board[0])):
-            if board[row][column] != "-":
-                board[row][column] = "-"
+    for row in range(3):
+        for column in range(3):
+            board[row][column] = "-"
                 
-def score_checker(board, character):
+def victory_check(board, character):
     if getMax(board, character) == 3:
         return 1
     elif check_diagonal(board, character) == 1:
@@ -34,9 +33,9 @@ def getMax(board, character):
 # functions to check each row and column for consecutive characters (X or O)
 def check_rows(board, character):
     max_score = 0
-    for row in range(0,len(board)):
+    for row in range(3):
         score = 0
-        for column in range(0,len(board[0])):
+        for column in range(3):
             if board[row][column] == character:
                 score +=1
                 if score > max_score:
@@ -48,9 +47,9 @@ def check_rows(board, character):
 
 def check_columns(board, character):
     max_score = 0
-    for column in range(0,len(board[0])):
+    for column in range(3):
         score = 0
-        for row in range(0,len(board)):
+        for row in range(3):
             if board[row][column] == character:
                 score +=1
                 if score > max_score:

@@ -60,7 +60,7 @@ def start_screen():
                 NewGameClicked = 0
                 return 1
 
-def draw_symbol(symbol, x, y):
+def draw_symbol(symbol, y, x):
     
     if symbol == "X":
         symbol = textures["cross"]
@@ -72,6 +72,14 @@ def draw_symbol(symbol, x, y):
     draw_y = 25 + (int(y) * 145) # vertical draw location
 
     sdl2.SDL_BlitSurface(symbol, None, window_surface, sdl2.SDL_Rect(draw_x, draw_y)) # draw X or O at the correct grid location
+
+def update_board(board):
+    for row in range(3):
+        for column in range(3):
+            symbol = board[row][column]
+            if board[row][column] != "-":
+                draw_symbol(symbol, row, column)
+    window.refresh()
 
 def clear_screen():
     # draw background
