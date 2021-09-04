@@ -71,9 +71,10 @@ def draw_symbol(symbol, y, x):
     draw_x = 105 + (int(x) * 145) # horizontal draw location
     draw_y = 25 + (int(y) * 145) # vertical draw location
 
-    sdl2.SDL_BlitSurface(symbol, None, window_surface, sdl2.SDL_Rect(draw_x, draw_y)) # draw X or O at the correct grid location
+    # draw X or O at the correct grid location, scaled to screen size
+    sdl2.SDL_BlitScaled(symbol, None, window_surface, sdl2.SDL_Rect(draw_x, draw_y, int(width * 0.219), int(height * 0.292)))
 
-def update_board(board):
+def draw_symbols(board):
     for row in range(3):
         for column in range(3):
             symbol = board[row][column]
@@ -87,7 +88,7 @@ def clear_screen():
     sdl2.ext.fill(window_surface, color, (0, 0, width, height))
 
     # draw grid
-    sdl2.SDL_BlitSurface(textures["grid"], None, window_surface, None)
+    sdl2.SDL_BlitScaled(textures["grid"], None, window_surface, sdl2.SDL_Rect(0, 0, 640, 480))
     
 def end_screen(ending, board):
     
