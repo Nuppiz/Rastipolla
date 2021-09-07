@@ -30,7 +30,7 @@ def game_loop(board, player_symbol, ai_symbol):
     Board.print_board(Gameboard)
     Graphics.draw_symbols(Gameboard)
     print ("Player 1's turn")
-    Input.player_input(Gameboard, player_symbol)
+    Input.player_input(Gameboard, player_symbol, ai_symbol)
     if Board.victory_check(Gameboard, player_symbol) == 1:
         Board.print_board(Gameboard)
         Graphics.draw_symbols(Gameboard)

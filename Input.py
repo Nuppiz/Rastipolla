@@ -17,7 +17,7 @@ class Input:
 
 g_Input = Input()
 
-def mouse_processor(board, player_symbol):
+def mouse_processor(board, player_symbol, ai_symbol):
     
     events = sdl2.ext.get_events()
     Graphics.window.refresh()
@@ -38,7 +38,7 @@ def mouse_processor(board, player_symbol):
             if event.button.button == sdl2.SDL_BUTTON_LEFT:   
                 check_cursor(board, g_Input.mouse_x, g_Input.mouse_y)
             if event.button.button == sdl2.SDL_BUTTON_RIGHT:   
-                cheater(board, player_symbol)
+                cheater(board, player_symbol, ai_symbol)
     
 def check_cursor(board, mouse_x, mouse_y):
     
@@ -71,11 +71,11 @@ def check_cursor(board, mouse_x, mouse_y):
             g_Input.make_move = 1  
             return click_x, click_y
 
-def player_input(board, player_symbol):
+def player_input(board, player_symbol, ai_symbol):
         
     while True:
             
-            mouse_processor(board, player_symbol)
+            mouse_processor(board, player_symbol, ai_symbol)
             
             if g_Input.make_move == 1:
                 # checks if the selected cell is already used up
@@ -141,7 +141,7 @@ def check_surroundings(board, row, column):
                 empty_space += 1
     return empty_space
 
-def cheater(board, player_symbol):
+def cheater(board, player_symbol, ai_symbol):
     # tells the player their best possible move
     bestVal = -1000
     bestMove = [-1, -1]
@@ -155,7 +155,7 @@ def cheater(board, player_symbol):
 
                 # compute evaluation function for this
                 # move.
-                moveVal = minimax(board, True, 0)
+                moveVal = minimax(board, True, 0, player_symbol, ai_symbol)
 
                 # Undo the move
                 board[row][column] = '-'
