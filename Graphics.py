@@ -6,8 +6,8 @@ from time import sleep
 # initialize  SDL2 objects & variables
 sdl2.ext.init()
 res_path        = sdl2.ext.Resources(__file__, ".")
-width           = 640
-height          = 480
+width           = 800
+height          = 600
 window          = sdl2.ext.Window("Noughts and Crosses", size=(width, height))
 window_surface  = window.get_surface()
 factory = sdl2.ext.SpriteFactory(sdl2.ext.SOFTWARE)
@@ -15,6 +15,11 @@ spriterenderer = factory.create_sprite_render_system(window)
 uifactory = sdl2.ext.UIFactory(factory)
 uiprocessor = sdl2.ext.UIProcessor()
 window.show()
+
+# calculate grid margins and sizes
+horizontal_margin = int(width * 0.165)
+vertical_margin = int(height * 0.053)
+square_size = int(width * 0.227)
 
 # load textures
 textures = {
@@ -32,14 +37,15 @@ for tex in textures.values():
   sdl2.SDL_SetColorKey(tex, sdl2.SDL_TRUE, 0xFF00FF)
 
 # load splash screen
-sdl2.SDL_BlitSurface(textures["splash"], None, window_surface, None)
+sdl2.SDL_BlitScaled(textures["splash"], None, window_surface, sdl2.SDL_Rect(0, 0, width, height))
 
 def start_screen():
     global NewGameClicked
     NewGameClicked = 0
     
     startgame = uifactory.from_image(sdl2.ext.BUTTON, res_path.get_path("start.png"))
-    startgame.position = 220, 270
+    #startgame.size = int(width * 0.313), int(height * 0.208)
+    startgame.position = int(width * 0.344), int(height * 0.563)
     
     spriterenderer.render((startgame))
     
@@ -68,8 +74,8 @@ def draw_symbol(symbol, y, x):
     elif symbol == "O":
         symbol = textures["nought"]
     
-    draw_x = 105 + (int(x) * 145) # horizontal draw location
-    draw_y = 25 + (int(y) * 145) # vertical draw location
+    draw_x = horizontal_margin + (int(x) * square_size) # horizontal draw location
+    draw_y = vertical_margin + (int(y) * square_size) # vertical draw location
 
     # draw X or O at the correct grid location, scaled to screen size
     sdl2.SDL_BlitScaled(symbol, None, window_surface, sdl2.SDL_Rect(draw_x, draw_y, int(width * 0.219), int(height * 0.292)))
@@ -88,7 +94,7 @@ def clear_screen():
     sdl2.ext.fill(window_surface, color, (0, 0, width, height))
 
     # draw grid
-    sdl2.SDL_BlitScaled(textures["grid"], None, window_surface, sdl2.SDL_Rect(0, 0, 640, 480))
+    sdl2.SDL_BlitScaled(textures["grid"], None, window_surface, sdl2.SDL_Rect(0, 0, width, height))
     
 def end_screen(ending, board):
     
@@ -106,14 +112,14 @@ def end_screen(ending, board):
     
     running = True
 
-    sdl2.SDL_BlitSurface(end_type, None, window_surface, None) # draw ending screen depending on how the game ended
+    sdl2.SDL_BlitScaled(end_type, None, window_surface, sdl2.SDL_Rect(0, 0, width, height)) # draw ending screen depending on how the game ended
     window.refresh()
     sleep(1) # small pause before buttons appear
     
     newgame = uifactory.from_image(sdl2.ext.BUTTON, res_path.get_path("playagain.png"))
-    newgame.position = 50, 320
+    newgame.position = int(width * 0.078), int(height * 0.667)
     quitgame = uifactory.from_image(sdl2.ext.BUTTON, res_path.get_path("quit.png"))
-    quitgame.position = 462, 320
+    quitgame.position = int(width * 0.722), int(height * 0.667)
     
     spriterenderer.render((newgame, quitgame))
     window.refresh()
@@ -140,3 +146,8 @@ def restart(button, event):
     
 def endgame(button, event):
     quit()
+
+def screen_query():
+    screen_table = [horizontal_margin, vertical_margin, square_size]
+
+    return screen_table

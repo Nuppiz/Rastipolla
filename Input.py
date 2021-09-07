@@ -31,37 +31,32 @@ def mouse_processor(board, player_symbol):
             g_Input.mouse_x = event.motion.x
             g_Input.mouse_y = event.motion.y
             if event.button.button == sdl2.SDL_BUTTON_LEFT:   
-                check_cursor(g_Input.mouse_x, g_Input.mouse_y)
+                check_cursor(board, g_Input.mouse_x, g_Input.mouse_y)
             if event.button.button == sdl2.SDL_BUTTON_RIGHT:   
                 cheater(board, player_symbol)
     
-def check_cursor(mouse_x, mouse_y):
+def check_cursor(board, mouse_x, mouse_y):
     
-    global player_col
-    global player_row
+    global click_x
+    global click_y
+
+    grid_table = Graphics.screen_query()
+
+    horizontal_margin = grid_table[0]
+    vertical_margin = grid_table[1]
+    square_size = grid_table[2]
+
+    click_x = int((mouse_x - horizontal_margin) // square_size)
+    click_y = int((mouse_y - vertical_margin) // square_size)
     
     while True: 
-        if int(mouse_x) >= 104 and int(mouse_x) <= 245:
-            player_col = 0
-            g_Input.correctMove_X = 1
-        elif int(mouse_x) >= 249 and int(mouse_x) <= 390:
-            player_col = 1
-            g_Input.correctMove_X = 1
-        elif int(mouse_x) >= 394 and int(mouse_x) <= 535:
-            player_col = 2
+        if click_x < len(board[0]) and mouse_x > horizontal_margin:
             g_Input.correctMove_X = 1
         else:
             print ("Clicked outside of the play area (X).")
             break
             
-        if int(mouse_y) >= 24 and int(mouse_y) <= 165:
-            player_row = 0
-            g_Input.correctMove_Y = 1
-        elif int(mouse_y) >= 169 and int(mouse_y) <= 310:
-            player_row = 1
-            g_Input.correctMove_Y = 1
-        elif int(mouse_y) >= 314 and int(mouse_y) <= 455:
-            player_row = 2
+        if click_y < len(board) and mouse_y > vertical_margin:
             g_Input.correctMove_Y = 1
         else:
             print ("Clicked outside of the play area (Y).")
@@ -69,7 +64,7 @@ def check_cursor(mouse_x, mouse_y):
         
         if g_Input.correctMove_X == 1 and g_Input.correctMove_Y == 1:
             g_Input.make_move = 1  
-            return player_col, player_row
+            return click_x, click_y
 
 def player_input(board, player_symbol):
         
@@ -79,7 +74,7 @@ def player_input(board, player_symbol):
             
             if g_Input.make_move == 1:
                 # checks if the selected cell is already used up
-                if not board[player_row][player_col] == "-":
+                if not board[click_y][click_x] == "-":
                     print ("Already in use!")
                     g_Input.make_move = 0
                     g_Input.correctMove_X = 0
@@ -88,7 +83,7 @@ def player_input(board, player_symbol):
                 
                 # if all conditions are met, cell is filled with an X
                 else:
-                    board[player_row][player_col] = player_symbol
+                    board[click_y][click_x] = player_symbol
                     g_Input.make_move = 0
                     g_Input.correctMove_X = 0
                     g_Input.correctMove_Y = 0
