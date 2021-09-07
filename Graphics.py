@@ -70,9 +70,9 @@ def start_screen():
                 if event.window.event == sdl2.SDL_WINDOWEVENT_RESIZED:
                     print("User resized window")
 
-            if event.type == sdl2.SDL_MOUSEBUTTONDOWN:
-                if event.button.button == sdl2.SDL_BUTTON_RIGHT:   
-                    refresh_screen()
+            #if event.type == sdl2.SDL_MOUSEBUTTONDOWN:
+                #if event.button.button == sdl2.SDL_BUTTON_RIGHT:   
+                    #refresh_screen()
 
             uiprocessor.dispatch([startgame], event)
             
@@ -156,7 +156,6 @@ def end_screen(ending, board):
             if event.type == sdl2.SDL_WINDOWEVENT:
                 if event.window.event == sdl2.SDL_WINDOWEVENT_RESIZED:
                     print("User resized window")
-                    refresh_screen()
         
             uiprocessor.dispatch([newgame, quitgame], event)
             
@@ -172,7 +171,7 @@ def restart(button, event):
 def endgame(button, event):
     quit()
 
-def refresh_screen():
+def refresh_screen(board):
     global height
     global width
     global res_index
@@ -197,6 +196,8 @@ def refresh_screen():
 
     print("New size of the window is", width, height)
     #sdl2.SDL_SetWindowSize(window, width, height)
+    clear_screen()
+    draw_symbols(board)
     window.refresh()
 
 def screen_query():

@@ -29,7 +29,6 @@ def mouse_processor(board, player_symbol, ai_symbol):
         if event.type == sdl2.SDL_WINDOWEVENT:
             if event.window.event == sdl2.SDL_WINDOWEVENT_RESIZED:
                 print("User resized window")
-                Graphics.refresh_screen()
         
         # when left mouse button is clicked, send coordinates to check if an X can be added on the board
         if event.type == sdl2.SDL_MOUSEBUTTONDOWN:
@@ -38,7 +37,7 @@ def mouse_processor(board, player_symbol, ai_symbol):
             if event.button.button == sdl2.SDL_BUTTON_LEFT:   
                 check_cursor(board, g_Input.mouse_x, g_Input.mouse_y)
             if event.button.button == sdl2.SDL_BUTTON_RIGHT:   
-                cheater(board, player_symbol, ai_symbol)
+                Graphics.refresh_screen(board)
     
 def check_cursor(board, mouse_x, mouse_y):
     
