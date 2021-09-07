@@ -25,6 +25,11 @@ def mouse_processor(board, player_symbol):
     for event in events:
         if event.type == sdl2.SDL_QUIT:
             quit()
+
+        if event.type == sdl2.SDL_WINDOWEVENT:
+            if event.window.event == sdl2.SDL_WINDOWEVENT_RESIZED:
+                print("User resized window")
+                Graphics.refresh_screen()
         
         # when left mouse button is clicked, send coordinates to check if an X can be added on the board
         if event.type == sdl2.SDL_MOUSEBUTTONDOWN:

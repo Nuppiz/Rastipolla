@@ -54,6 +54,10 @@ def main():
         for event in events:
             if event.type == sdl2.SDL_QUIT:
                 quit()
+            if event.type == sdl2.SDL_WINDOWEVENT:
+                if event.window.event == sdl2.SDL_WINDOWEVENT_RESIZED:
+                    print("User resized window")
+                    Graphics.refresh_screen()
                 
 Gameboard = []
 Board.init_board(Gameboard)

@@ -1,14 +1,19 @@
 import sdl2.ext
-import sdl2.sdlimage
+#import sdl2.sdlimage
 
 from time import sleep
+
+global height
+global width
+global res_index
 
 # initialize  SDL2 objects & variables
 sdl2.ext.init()
 res_path        = sdl2.ext.Resources(__file__, ".")
 width           = 800
 height          = 600
-window          = sdl2.ext.Window("Noughts and Crosses", size=(width, height))
+res_index       = 1
+window          = sdl2.ext.Window("Noughts and Crosses", size=(width, height), flags=sdl2.SDL_WINDOW_RESIZABLE)
 window_surface  = window.get_surface()
 factory = sdl2.ext.SpriteFactory(sdl2.ext.SOFTWARE)
 spriterenderer = factory.create_sprite_render_system(window)
@@ -54,12 +59,21 @@ def start_screen():
     running = True
     
     while running:
+
         window.refresh()
         events = sdl2.ext.get_events()
         for event in events:
             if event.type == sdl2.SDL_QUIT:
                 quit()
-        
+
+            if event.type == sdl2.SDL_WINDOWEVENT:
+                if event.window.event == sdl2.SDL_WINDOWEVENT_RESIZED:
+                    print("User resized window")
+
+            if event.type == sdl2.SDL_MOUSEBUTTONDOWN:
+                if event.button.button == sdl2.SDL_BUTTON_RIGHT:   
+                    refresh_screen()
+
             uiprocessor.dispatch([startgame], event)
             
             if NewGameClicked == 1:
@@ -67,7 +81,13 @@ def start_screen():
                 return 1
 
 def draw_symbol(symbol, y, x):
-    
+
+    grid_table = screen_query()
+
+    horizontal_margin = grid_table[0]
+    vertical_margin = grid_table[1]
+    square_size = grid_table[2]
+
     if symbol == "X":
         symbol = textures["cross"]
         
@@ -132,6 +152,11 @@ def end_screen(ending, board):
         for event in events:
             if event.type == sdl2.SDL_QUIT:
                 quit()
+
+            if event.type == sdl2.SDL_WINDOWEVENT:
+                if event.window.event == sdl2.SDL_WINDOWEVENT_RESIZED:
+                    print("User resized window")
+                    refresh_screen()
         
             uiprocessor.dispatch([newgame, quitgame], event)
             
@@ -147,7 +172,38 @@ def restart(button, event):
 def endgame(button, event):
     quit()
 
+def refresh_screen():
+    global height
+    global width
+    global res_index
+
+    res_changed = 0
+
+    if res_index == 1 and res_changed == 0:
+        res_index = 2
+        width = 1280
+        height = 960
+        res_changed = 1
+    elif res_index == 2 and res_changed == 0:
+        res_index = 0
+        width = 640
+        height = 480
+        res_changed = 1
+    elif res_index == 0 and res_changed == 0:
+        res_index = 1
+        width = 800
+        height = 600
+        res_changed = 1
+
+    print("New size of the window is", width, height)
+    #sdl2.SDL_SetWindowSize(window, width, height)
+    window.refresh()
+
 def screen_query():
+    horizontal_margin = int(width * 0.165)
+    vertical_margin = int(height * 0.053)
+    square_size = int(width * 0.227)
+
     screen_table = [horizontal_margin, vertical_margin, square_size]
 
     return screen_table
