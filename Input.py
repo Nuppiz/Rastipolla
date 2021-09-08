@@ -19,7 +19,7 @@ g_Input = Input()
 
 def mouse_processor(board, player_symbol, ai_symbol):
     
-    arg1 = Graphics.return_window()
+    window = Graphics.return_window()
 
     events = sdl2.ext.get_events()
     
@@ -30,7 +30,7 @@ def mouse_processor(board, player_symbol, ai_symbol):
         if event.type == sdl2.SDL_WINDOWEVENT:
             if event.window.event == sdl2.SDL_WINDOWEVENT_RESIZED:
                 print("User resized window")
-                Graphics.get_screen_size(arg1)
+                Graphics.redraw(window, board)
         
         # when left mouse button is clicked, send coordinates to check if an X can be added on the board
         if event.type == sdl2.SDL_MOUSEBUTTONDOWN:
@@ -50,10 +50,11 @@ def check_cursor(board, mouse_x, mouse_y):
 
     horizontal_margin = grid_table[0]
     vertical_margin = grid_table[1]
-    square_size = grid_table[2]
+    square_size_x = grid_table[2]
+    square_size_y = grid_table[3]
 
-    click_x = int((mouse_x - horizontal_margin) // square_size)
-    click_y = int((mouse_y - vertical_margin) // square_size)
+    click_x = int((mouse_x - horizontal_margin) // square_size_x)
+    click_y = int((mouse_y - vertical_margin) // square_size_y)
     
     while True: 
         if click_x < len(board[0]) and mouse_x > horizontal_margin:

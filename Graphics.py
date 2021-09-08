@@ -1,6 +1,8 @@
 import sdl2.ext
+import ctypes
 
 from time import sleep
+from math import sqrt
 
 # initialize  SDL2 objects & variables
 sdl2.ext.init()
@@ -54,7 +56,7 @@ def start_screen():
     
     while running:
 
-        refresh_screen(window_p)
+        sdl2.SDL_UpdateWindowSurface(window_p)
         events = sdl2.ext.get_events()
         for event in events:
             if event.type == sdl2.SDL_QUIT:
@@ -85,7 +87,8 @@ def draw_symbol(symbol, y, x):
     # empty space on the top of the screen
     vertical_margin = grid_table[1]
     # size of each square on the grid
-    square_size = grid_table[2]
+    square_size_h = grid_table[2]
+    square_size_v = grid_table[3]
 
     # decide which symbol to draw based on what argument is sent to the function
     if symbol == "X":
@@ -94,8 +97,8 @@ def draw_symbol(symbol, y, x):
     elif symbol == "O":
         symbol = textures["nought"]
     
-    draw_x = horizontal_margin + (int(x) * square_size) # horizontal draw location
-    draw_y = vertical_margin + (int(y) * square_size) # vertical draw location
+    draw_x = horizontal_margin + (int(x) * square_size_h) # horizontal draw location
+    draw_y = vertical_margin + (int(y) * square_size_v) # vertical draw location
 
     # draw X or O at the correct grid location, scaled to screen size
     sdl2.SDL_BlitScaled(symbol, None, window_surface, sdl2.SDL_Rect(draw_x, draw_y, int(width * 0.219), int(height * 0.292)))
@@ -107,7 +110,7 @@ def draw_symbols(board):
             symbol = board[row][column]
             if board[row][column] != "-":
                 draw_symbol(symbol, row, column)
-    refresh_screen(window_p)
+    sdl2.SDL_UpdateWindowSurface(window_p)
 
 # function that "clears" the screen by drawing new empty items on top
 def clear_screen():
@@ -142,7 +145,7 @@ def end_screen(ending, board):
     running = True
 
     sdl2.SDL_BlitScaled(end_type, None, window_surface, sdl2.SDL_Rect(0, 0, width, height)) # draw ending screen depending on how the game ended
-    refresh_screen(window_p)
+    sdl2.SDL_UpdateWindowSurface(window_p)
     sleep(1) # small pause before buttons appear
     
     # button rendering and what functions they activate
@@ -153,7 +156,7 @@ def end_screen(ending, board):
     quitgame.position = int(width * 0.722), int(height * 0.667)
     
     spriterenderer.render((newgame, quitgame))
-    refresh_screen(window_p)
+    sdl2.SDL_UpdateWindowSurface(window_p)
     
     newgame.click += restart
     quitgame.click += endgame
@@ -167,7 +170,8 @@ def end_screen(ending, board):
             if event.type == sdl2.SDL_WINDOWEVENT:
                 if event.window.event == sdl2.SDL_WINDOWEVENT_RESIZED:
                     print("User resized window")
-                    refresh_screen(window_p)
+                    redraw(window, board)
+                    end_screen_mini(ending) # redraw ending graphics in new resolution
             
             if event.type == sdl2.SDL_MOUSEBUTTONDOWN: 
                 if event.button.button == sdl2.SDL_BUTTON_RIGHT:   
@@ -208,7 +212,7 @@ def end_screen_mini(ending):
     
     spriterenderer.render((newgame, quitgame))
 
-    refresh_screen(window_p)
+    sdl2.SDL_UpdateWindowSurface(window_p)
 
 # this is the function that is called by the New Game/Play Again buttons, and simply changes the value of NewGameClicked so the main program knows to start a new game
 def restart(button, event):
@@ -251,45 +255,50 @@ def change_resolution(board):
     # graphics are redrawn for the new screen size
     clear_screen()
     draw_symbols(board)
-    refresh_screen(window_p)
+    sdl2.SDL_UpdateWindowSurface(window_p)
 
 def screen_query():
     # calculate grid margins and square size, then send them as a table to whatever function is asking for them
 
+    aspect_ratio = (width / height) / 1.333
+    screen_area = width * height
+
     horizontal_margin = int(width * 0.165)
     vertical_margin = int(height * 0.053)
-    square_size = int(width * 0.227)
+    square_size_h = int(width * 0.227)
+    square_size_v = int(height * 0.303)
+    print ("SS H:", square_size_h,", V:", square_size_v)
 
-    screen_table = [horizontal_margin, vertical_margin, square_size]
+    screen_table = [horizontal_margin, vertical_margin, square_size_h, square_size_v]
 
     return screen_table
 
 def return_window():
+    # dummy function so the "window" variable can be used outside of Graphics.py
+    return window
 
-    return window_p
+def refresh_screen(window):
+    sdl2.SDL_UpdateWindowSurface(window)
 
-def refresh_screen(thisthing):
-    sdl2.SDL_GetWindowSize(thisthing, None, None)
-    sdl2.SDL_UpdateWindowSurface(thisthing)
-
-def get_screen_size(thisthing):
-    sdl2.SDL_GetWindowSize(thisthing, None, None)
-    print("New size of the window is", width, height)
-
-    return width, height
-
-def redraw(board):
+def redraw(window, board):
 
     global width
     global height
 
-    width = get_screen_size(window)[0]
-    height = get_screen_size(window)[1]
+    # for GetWindowSize to work, we need to convert the width and height into separate ctype variables
+    width_p = ctypes.c_int()
+    height_p = ctypes.c_int()
 
-    print("New size of the window is", width, height)
-    sdl2.SDL_SetWindowSize(window_p, width, height)
+    sdl2.SDL_GetWindowSize(window, width_p, height_p)
+
+    print("New size of the window is", width_p.value, height_p.value)
+    sdl2.SDL_SetWindowSize(window_p, width_p.value, height_p.value)
+
+    # then for the graphics drawing functions, we need to convert them back to normal Python integers
+    width = int(width_p.value)
+    height = int(height_p.value)
 
     # graphics are redrawn for the new screen size
     clear_screen()
     draw_symbols(board)
-    refresh_screen(window_p)
+    sdl2.SDL_UpdateWindowSurface(window_p)
