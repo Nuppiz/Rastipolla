@@ -42,13 +42,15 @@ def game_loop(board, player_symbol, ai_symbol):
             main()
 
 def main():
+    arg1 = Graphics.return_window()
+
     running = True 
     
     Board.clear_board(Gameboard)
     Graphics.clear_screen()
     
     while running == True:
-        Graphics.window.refresh()
+        Graphics.refresh_screen(arg1)
         game_loop(Gameboard, "X", "O")
         events = sdl2.ext.get_events()
         for event in events:
