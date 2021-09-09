@@ -1,9 +1,6 @@
 import sdl2.ext
 import ctypes
 
-from time import sleep
-from math import sqrt
-
 # initialize  SDL2 objects & variables
 sdl2.ext.init()
 res_path        = sdl2.ext.Resources(__file__, ".")
@@ -146,7 +143,7 @@ def end_screen(ending, board):
 
     sdl2.SDL_BlitScaled(end_type, None, window_surface, sdl2.SDL_Rect(0, 0, width, height)) # draw ending screen depending on how the game ended
     sdl2.SDL_UpdateWindowSurface(window_p)
-    sleep(1) # small pause before buttons appear
+    sdl2.SDL_Delay(1000) # small pause before buttons appear
     
     # button rendering and what functions they activate
 
@@ -189,9 +186,6 @@ def end_screen_mini(ending):
 
     window_surface = sdl2.SDL_GetWindowSurface(window)
     spriterenderer = factory.create_sprite_render_system(window)
-    
-    global NewGameClicked
-    NewGameClicked = 0
     
     # select the ending graphic based on how the game ended
     if ending == 1:
