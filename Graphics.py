@@ -254,14 +254,10 @@ def change_resolution(board):
 def screen_query():
     # calculate grid margins and square size, then send them as a table to whatever function is asking for them
 
-    aspect_ratio = (width / height) / 1.333
-    screen_area = width * height
-
     horizontal_margin = int(width * 0.165)
     vertical_margin = int(height * 0.053)
-    square_size_h = int(width * 0.227)
-    square_size_v = int(height * 0.303)
-    print ("SS H:", square_size_h,", V:", square_size_v)
+    square_size_h = int(width * 0.227) # horizontal square size
+    square_size_v = int(height * 0.303) # vertical square size
 
     screen_table = [horizontal_margin, vertical_margin, square_size_h, square_size_v]
 
